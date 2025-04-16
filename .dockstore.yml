@@ -2,7 +2,7 @@ version: 1.2
 workflows:
  - name: Pilon_Plate_Swipe_Variant_Calling
    subclass: WDL
-   primaryDescriptorPath: workflows/wf_pilon_plate_swipe.wdl
+   primaryDescriptorPath: /workflows/wf_pilon_plate_swipe.wdl
    authors:
     - orcid: 0000-0002-7219-0478
     - name: Marco Teixeira
