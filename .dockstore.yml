@@ -8,3 +8,11 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: Calls variants in plate swipes with Pilon, given a set of StrainGST results.   
+ - name: CleanSweep_Filter
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_cleansweep_filter.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Filter subcommand of CleanSweep. Strain-specific variant calling with plate swipes.
