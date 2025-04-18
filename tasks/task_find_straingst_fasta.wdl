@@ -56,6 +56,10 @@ task find_straingst_fasta {
         )
     )
 
+    straingst = straingst.drop_duplicates(
+      subset = "strain"
+    )
+
     with open("query.txt", "w") as file:
       file.write(
         straingst.loc[
