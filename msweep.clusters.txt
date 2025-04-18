@@ -1,0 +1,4 @@
+id	cluster	assembly
+0	species2	gs://path/to/fasta/species2.fa.gz
+1	species3	gs://path/to/fasta/species3.fa.gz
+2	species1	gs://path/to/fasta/species1.fa.gz

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+VERSION="3.2.2"
+
+cd docker/themisto
+echo Building the Docker image
+docker build -t marcoteix/themisto:$VERSION .
+echo Pushing to Docker Hub
+docker push marcoteix/themisto:$VERSION
