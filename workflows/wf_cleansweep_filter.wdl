@@ -18,6 +18,7 @@ workflow cleansweep_filter {
         Int cleansweep_min_ref_bc = 0
         Int cleansweep_num_variants_estimator = 200
         Int cleansweep_num_variants_coverage = 100000
+        Float overdispersion_bias = 1
         Float cleansweep_max_overdispersion = 0.70
         Int cleansweep_random_state = 23
         Int cleansweep_num_chains = 5
@@ -36,6 +37,7 @@ workflow cleansweep_filter {
             min_ref_bc = cleansweep_min_ref_bc,
             num_variants_estimator = cleansweep_num_variants_estimator,
             num_variants_coverage = cleansweep_num_variants_coverage,
+            overdispersion_bias = overdispersion_bias,
             max_overdispersion = cleansweep_max_overdispersion,
             random_state = cleansweep_random_state,
             num_chains = cleansweep_num_chains,

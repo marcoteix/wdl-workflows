@@ -10,6 +10,7 @@ task cleansweep_filter {
     Int min_ref_bc = 0
     Int num_variants_estimator = 200
     Int num_variants_coverage = 100000
+    Float overdispersion_bias = 1
     Float max_overdispersion = 0.7
     Int random_state = 23
     Int num_chains = 5
@@ -44,6 +45,7 @@ task cleansweep_filter {
         --min-ref-bc ~{min_ref_bc} \
         --downsample ~{num_variants_estimator} \
         --max-overdispersion ~{max_overdispersion} \
+        --overdispersion-bias ~{overdispersion_bias} \
         --n-coverage-sites ~{num_variants_coverage} \
         --seed ~{random_state} \
         --n-chains ~{num_chains} \
