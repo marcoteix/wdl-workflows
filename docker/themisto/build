@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/bash -e
 
 VERSION="3.2.2"
 
 cd docker/themisto
 echo Building the Docker image
-docker build -t marcoteix/themisto:$VERSION .
+docker build -t us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/themisto:$VERSION .
 echo Pushing to Docker Hub
-docker push marcoteix/themisto:$VERSION
+docker push us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/themisto:$VERSION
