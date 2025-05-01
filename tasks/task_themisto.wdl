@@ -18,10 +18,8 @@ task themisto {
     echo "Creating a file with paths to the reference FASTAs..."
 
     # File with a list of references
-    touch fof.txt
-    for file in ~{sep=' ' references}; do 
-      echo -e $file"\n" >> fof.txt
-    done
+    references=(~{sep=' ' references})
+    printf "%s\n" "${references[@]}" > fof.txt
 
     echo "Building the themisto index..."
     themisto build \
@@ -76,6 +74,6 @@ task themisto {
     disks:  "local-disk " + disk_size + " SSD"
     disk: disk_size + " GB" # TES
     preemptible: 0
-    maxRetries: 1
+    maxRetries: 0
   }
 }
