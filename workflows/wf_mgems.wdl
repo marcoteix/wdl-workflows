@@ -21,7 +21,6 @@ workflow mgems_from_straingst {
         File reads2
         String query_strain
         Array[File] straingst_strains
-        Array[String] strain_names
         String straingst_fasta_location
         # Themisto options
         String themisto_docker_image = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/themisto:3.2.2"
@@ -56,7 +55,7 @@ workflow mgems_from_straingst {
     call themisto_task.themisto {
         input:
             references = find_straingst_fasta.all_strains_fasta,
-            reference_names = strain_names,
+            reference_names = find_straingst_fasta.strain_names,
             reads1 = reads1,
             reads2 = reads2,
             samplename = samplename,

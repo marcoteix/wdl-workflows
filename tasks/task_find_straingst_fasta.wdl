@@ -85,12 +85,20 @@ task find_straingst_fasta {
         )
       )
 
+    with open("names.txt", "w") as file:
+      file.write(
+        "\n".join(
+          straingst["strain"].values
+        )
+      )
+
     CODE
   >>>
   output {
     File query_fasta = read_string("query.txt")
     Array[File] background_fasta = read_lines("background.txt")
     Array[File] all_strains_fasta = read_lines("all.txt")
+    Array[String] strain_names = read_lines("names.txt")
   }
   runtime {
     docker: "us-docker.pkg.dev/general-theiagen/theiagen/terra-tools:2023-03-16"
