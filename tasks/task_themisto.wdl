@@ -20,7 +20,7 @@ task themisto {
     # File with a list of references
     touch fof.txt
     for file in ~{sep=' ' references}; do 
-      echo $file"\n" >> fof.txt
+      echo -e $file"\n" >> fof.txt
     done
 
     echo "Building the themisto index..."
