@@ -2,11 +2,12 @@ version 1.0
 
 task themisto {
   input {
-    File reference
+    Array[File] references
+    Array[String] reference_names
     File reads1
     File reads2
     String samplename
-    String docker = "marcoteix/themisto:3.2.2"
+    String docker = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/themisto:3.2.2"
     Int kmer_size = 31
     Int cpu = 4
     Int memory = 32
@@ -16,10 +17,13 @@ task themisto {
     # version capture
     themisto --version > VERSION.TXT
 
+    # File with a list of references
+    echo ~{sep='\n' references} > fof.txt
+
     echo "Building the themisto index..."
     themisto build \
         -k ~{kmer_size} \
-        -i ~{reference} \
+        -i fof.txt \
         -o ~{samplename}_index \
         --temp-dir themisto_tmp
 
@@ -45,10 +49,20 @@ task themisto {
         --sort-output \
         --gzip-output
 
+    echo "Adding ~{samplename}_index to a tar file..."
+    tar -czf ~{samplename}_index.tar.gz ~{samplename}_index
+
+    echo "Creating a clustering file..."
+    echo ~{sep='\n' reference_names} > ~{samplename}_clustering.txt
+
+    echo Done!
+
   >>>
   output {
     File themisto_alignment1 = "~{samplename}/alignment_1.aln"
     File themisto_alignment2 = "~{samplename}/alignment_2.aln"
+    File themisto_index = "~{samplename}_index.tar.gz"
+    File clustering = "~{samplename}_clustering.txt"
     String themisto_version = read_string("VERSION.TXT")
     String themisto_docker = "~{docker}"
   }
@@ -59,6 +73,6 @@ task themisto {
     disks:  "local-disk " + disk_size + " SSD"
     disk: disk_size + " GB" # TES
     preemptible: 0
-    maxRetries: 3
+    maxRetries: 1
   }
 }

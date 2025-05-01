@@ -16,3 +16,11 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: Filter subcommand of CleanSweep. Strain-specific variant calling with plate swipes.
+ - name: mGEMS_from_StrainGST
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_mgems.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Calls variants from plate swipe data with mGEMS and Pilon, given a set of StraniGST outputs.
