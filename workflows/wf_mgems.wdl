@@ -5,6 +5,7 @@ import "../tasks/task_themisto.wdl" as themisto_task
 import "../tasks/task_msweep.wdl" as msweep_task
 import "../tasks/task_mgems.wdl" as mgems_task
 import "../tasks/task_bwa.wdl" as bwa_task
+import "../tasks/task_shovill.wdl" as shovill_task
 import "../tasks/task_pilon.wdl" as pilon_task
 import "../tasks/task_find_straingst_fasta.wdl" as find_straingst_fasta_task
 import "../tasks/task_bcftools_view.wdl" as bcftools_view_task 

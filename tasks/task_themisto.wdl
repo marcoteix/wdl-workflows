@@ -14,11 +14,14 @@ task themisto {
     Int disk_size = 64
   }
   command <<<
-    # version capture
-    themisto --version > VERSION.TXT
+
+    echo "Creating a file with paths to the reference FASTAs..."
 
     # File with a list of references
-    echo ~{sep='\n' references} > fof.txt
+    touch fof.txt
+    for file in ~{sep=' ' references}; do 
+      echo $file"\n" >> fof.txt
+    done
 
     echo "Building the themisto index..."
     themisto build \
