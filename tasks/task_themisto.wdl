@@ -22,6 +22,7 @@ task themisto {
     printf "%s\n" "${references[@]}" > fof.txt
 
     mkdir -p themisto_tmp
+    mkdir -p ~{samplename}
 
     echo "Building the themisto index..."
     themisto build \
@@ -38,7 +39,7 @@ task themisto {
         --temp-dir themisto_tmp \
         --rc \
         --n-threads ~{cpu} \
-        --sort-output \
+        --sort-output-lines \
         --gzip-output
 
     echo "Aligning reverse reads with Themisto..."
@@ -49,14 +50,15 @@ task themisto {
         --temp-dir themisto_tmp \
         --rc \
         --n-threads ~{cpu} \
-        --sort-output \
+        --sort-output-lines \
         --gzip-output
 
     echo "Adding ~{samplename}_index to a tar file..."
-    tar -czf ~{samplename}_index.tar.gz ~{samplename}_index
+    tar -czf ~{samplename}_index.tar.gz ~{samplename}_index.*
 
     echo "Creating a clustering file..."
-    echo ~{sep='\n' reference_names} > ~{samplename}_clustering.txt
+    clusters=(~{sep=' ' reference_names})
+    printf "%s\n" "${clusters[@]}" > ~{samplename}_clustering.txt
 
     echo Done!
 
