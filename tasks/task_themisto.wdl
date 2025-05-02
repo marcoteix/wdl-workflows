@@ -21,6 +21,8 @@ task themisto {
     references=(~{sep=' ' references})
     printf "%s\n" "${references[@]}" > fof.txt
 
+    mkdir -p themisto_tmp
+
     echo "Building the themisto index..."
     themisto build \
         -k ~{kmer_size} \
@@ -60,8 +62,8 @@ task themisto {
 
   >>>
   output {
-    File themisto_alignment1 = "~{samplename}/alignment_1.aln"
-    File themisto_alignment2 = "~{samplename}/alignment_2.aln"
+    File themisto_alignment1 = "~{samplename}/alignment_1.aln.gz"
+    File themisto_alignment2 = "~{samplename}/alignment_2.aln.gz"
     File themisto_index = "~{samplename}_index.tar.gz"
     File clustering = "~{samplename}_clustering.txt"
     String themisto_version = read_string("VERSION.TXT")
