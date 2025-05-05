@@ -24,3 +24,11 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: Calls variants from plate swipe data with mGEMS and Pilon, given a set of StraniGST outputs.
+ - name: CleanSweep_VCF_to_Tree
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_cleansweep_vcf_to_tree.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Creates a phylogenetic tree from a set of CleanSweep output VCFs with IQ-TREE2.
