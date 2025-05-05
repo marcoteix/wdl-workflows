@@ -125,7 +125,6 @@ workflow mgems_from_straingst {
         File themisto_alignment2 = themisto.themisto_alignment2
         File themisto_index = themisto.themisto_index
         File clustering = themisto.clustering
-        String themisto_version = themisto.themisto_version
         String themisto_docker = themisto.themisto_docker
         # mSWEEP outputs
         File msweep_abundances = msweep.msweep_abundances
