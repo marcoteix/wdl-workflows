@@ -30,8 +30,8 @@ task msweep {
 
   >>>
   output {
-    File msweep_abundances = "~{samplename}/msweep_abundances.txt"
-    File msweep_probabilities = "~{samplename}/msweep_probs.txt"
+    File msweep_abundances = "~{samplename}_abundances.txt"
+    File msweep_probabilities = "~{samplename}_probs.tsv"
     String msweep_docker = "~{docker}"
   }
   runtime {

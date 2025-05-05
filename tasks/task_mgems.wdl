@@ -22,7 +22,8 @@ task mgems {
     mkdir ~{samplename}
 
     # Untar themisto index
-    tar -xvf ~{themisto_index} -C themisto_index
+    mkdir ./themisto_index
+    tar -xvf ~{themisto_index} -C ./themisto_index
 
     mGEMS \
         -r ~{reads_1},~{reads_2} \
@@ -31,7 +32,7 @@ task mgems {
         -o ~{samplename} \
         --probs ~{msweep_probabilities} \
         -a ~{msweep_abundances} \
-        --index themisto_index
+        --index ./themisto_index
 
     # Find output files
     printf "%s\n" ~{samplename}/*.fastq.gz > BINS.txt

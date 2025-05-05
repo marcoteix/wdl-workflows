@@ -22,14 +22,19 @@ task cleansweep_collection {
 
             name="${names[i]}"
             vcf="${vcfs[i]}"
-            mv $vcf vcfs/$name.vcf
+            bcftools view -o vcfs/$name.vcf $vcf
+        
+        done
 
         # Run cleansweep collection
         echo "Merging VCFs with cleansweep collection..."
 
+        mkdir cleansweep_tmp
+
         cleansweep collection \
             -o ~{collection_name}.merged.vcf \
             --min-ani ~{min_ani} \
+            --tmp-dir cleansweep_tmp \
             vcfs/*.vcf
 
         echo "Compressing with bcftools view..."
