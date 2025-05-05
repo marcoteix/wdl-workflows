@@ -68,7 +68,6 @@ task themisto {
     File themisto_alignment2 = "~{samplename}/alignment_2.aln.gz"
     File themisto_index = "~{samplename}_index.tar.gz"
     File clustering = "~{samplename}_clustering.txt"
-    String themisto_version = read_string("VERSION.TXT")
     String themisto_docker = "~{docker}"
   }
   runtime {
