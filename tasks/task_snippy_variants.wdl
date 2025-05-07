@@ -32,7 +32,7 @@ task snippy_variants {
     snippy --version | head -1 | tee VERSION
 
     # set reads var
-    if [ -z "~{contigs}" ]; then 
+    if [ ! -z "~{contigs}" ]; then 
       reads="--contigs ~{contigs}"
     else
       if [ -z "~{read2}" ]; then
