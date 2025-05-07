@@ -108,8 +108,8 @@ workflow mgems_from_straingst {
     if (run_assembly) {
         call shovill_task.shovill_pe {
             input:
-                read1_cleaned = reads1,
-                read2_cleaned = reads2,
+                read1_cleaned = mgems.mgems_query_reads_1,
+                read2_cleaned = mgems.mgems_query_reads_2,
                 samplename = samplename,
                 docker = shovill_docker,
                 disk_size = shovill_disk_size,
