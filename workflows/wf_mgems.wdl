@@ -9,6 +9,10 @@ import "../tasks/task_shovill.wdl" as shovill_task
 import "../tasks/task_pilon.wdl" as pilon_task
 import "../tasks/task_find_straingst_fasta.wdl" as find_straingst_fasta_task
 import "../tasks/task_bcftools_view.wdl" as bcftools_view_task 
+import "../tasks/task_shovill.wdl" as shovill_task 
+import "../tasks/task_snippy_variants.wdl" as snippy_variants_task 
+
+
 
 workflow mgems_from_straingst {
     meta {
@@ -46,6 +50,16 @@ workflow mgems_from_straingst {
         # Pilon options
         Int pilon_memory = 32
         Int pilon_disk_size = 64
+        # Assembly options
+        Boolean run_assembly = false
+        String shovill_docker = "us-docker.pkg.dev/general-theiagen/staphb/shovill:1.1.0"
+        Int shovill_disk_size = 100
+        Int shovill_cpu = 4
+        Int shovill_memory = 16
+        # Snippy options
+        String snippy_docker = "us-docker.pkg.dev/general-theiagen/staphb/snippy:4.6.0"
+        Int snippy_cpus = 8
+        Int snippy_memory = 32
     }
     call find_straingst_fasta_task.find_straingst_fasta {
         input:
@@ -91,33 +105,56 @@ workflow mgems_from_straingst {
             memory = mgems_memory,
             disk_size = mgems_disk_size
     }
-    call bwa_task.bwa {
-        input:
-            read1 = mgems.mgems_query_reads_1,
-            read2 = mgems.mgems_query_reads_2,
-            samplename = samplename,
-            reference_genome = find_straingst_fasta.query_fasta,
-            cpu = bwa_cpu,
-            disk_size = bwa_disk_size,
-            memory = bwa_memory
+    if (run_assembly) {
+        call shovill_task.shovill_pe {
+            input:
+                read1_cleaned = reads1,
+                read2_cleaned = reads2,
+                samplename = samplename,
+                docker = shovill_docker,
+                disk_size = shovill_disk_size,
+                cpu = shovill_cpu,
+                memory = shovill_memory
+        }
+        call snippy_variants_task.snippy_variants {
+            input:
+                reference_genome_file = find_straingst_fasta.query_fasta,
+                contigs = shovill_pe.assembly_fasta,
+                samplename = samplename,
+                docker = snippy_docker,
+                cpus = snippy_cpus,
+                memory = snippy_memory
+        }
     }
-    call pilon_task.pilon {
-        input:
-            assembly = find_straingst_fasta.query_fasta,
-            bam = bwa.sorted_bam,
-            bai = bwa.sorted_bai,
-            samplename = samplename,
-            fix = "bases",
-            memory = pilon_memory,
-            disk_size = pilon_disk_size
-    }
-    call bcftools_view_task.bcftools_view {
-        input:
-            vcf = pilon.vcf,
-            samplename = samplename,
-            output_type = "v",
-            output_extension = "vcf",
-            query = "-i \'INFO/AC > 0\' -f \'PASS,.\'"
+    if (!run_assembly) {
+        call bwa_task.bwa {
+            input:
+                read1 = mgems.mgems_query_reads_1,
+                read2 = mgems.mgems_query_reads_2,
+                samplename = samplename,
+                reference_genome = find_straingst_fasta.query_fasta,
+                cpu = bwa_cpu,
+                disk_size = bwa_disk_size,
+                memory = bwa_memory
+        }
+        call pilon_task.pilon {
+            input:
+                assembly = find_straingst_fasta.query_fasta,
+                bam = bwa.sorted_bam,
+                bai = bwa.sorted_bai,
+                samplename = samplename,
+                fix = "bases",
+                memory = pilon_memory,
+                disk_size = pilon_disk_size
+        }
+        call bcftools_view_task.bcftools_view {
+            input:
+                vcf = pilon.vcf,
+                samplename = samplename,
+                output_type = "v",
+                output_extension = "vcf",
+                query = "-i \'INFO/AC > 0\' -f \'PASS,.\'"
+        }
     }
     output {
         # Themisto outputs
@@ -135,10 +172,20 @@ workflow mgems_from_straingst {
         File? mgems_query_reads_1 = mgems.mgems_query_reads_1
         File? mgems_query_reads_2 = mgems.mgems_query_reads_2
         String mgems_docker = mgems.mgems_docker
+        # Output VCF
+        File variants_vcf = select_first([bcftools_view.output_vcf, snippy_variants.snippy_variants_vcf])
         # BWA and Pilon outputs
-        File variants_vcf = bcftools_view.output_vcf
-        String pilon_version = pilon.pilon_version
-        String pilon_docker = pilon.pilon_docker
-        String bwa_version = bwa.bwa_version
+        String? pilon_version = pilon.pilon_version
+        String? pilon_docker = pilon.pilon_docker
+        String? bwa_version = bwa.bwa_version
+        # Shovill outputs
+        File? assembly_fasta = shovill_pe.assembly_fasta
+        String? shovill_version = shovill_pe.shovill_version 
+        # Snippy variants outputs
+        File? snippy_variants_outdir_tarball = snippy_variants.snippy_variants_outdir_tarball
+        File? snippy_variants_vcf = snippy_variants.snippy_variants_vcf
+        File? snippy_variants_results = snippy_variants.snippy_variants_results
+        String? snippy_variants_version = snippy_variants.snippy_variants_version
+        String? snippy_variants_docker = snippy_variants.snippy_variants_docker
     }
 }
