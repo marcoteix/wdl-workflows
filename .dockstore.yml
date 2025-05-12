@@ -18,12 +18,28 @@ workflows:
    topic: Filter subcommand of CleanSweep. Strain-specific variant calling with plate swipes.
  - name: mGEMS_from_StrainGST
    subclass: WDL
+   primaryDescriptorPath: /workflows/wf_mgems_from_straingst.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Calls variants from plate swipe data with mGEMS and Pilon/Snippy, given a set of StraniGST outputs.
+ - name: mGEMS
+   subclass: WDL
    primaryDescriptorPath: /workflows/wf_mgems.wdl
    authors:
     - orcid: 0000-0002-7219-0478
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
-   topic: Calls variants from plate swipe data with mGEMS and Pilon, given a set of StraniGST outputs.
+   topic: Calls variants from plate swipe data with mGEMS and Pilon/Snippy.
+ - name: Themisto_index
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_themisto_index.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Builds a Themisto index from a set of FASTA files.
  - name: CleanSweep_VCF_to_Tree
    subclass: WDL
    primaryDescriptorPath: /workflows/wf_cleansweep_vcf_to_tree.wdl

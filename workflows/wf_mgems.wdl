@@ -1,35 +1,31 @@
 version 1.0
 
-import "../tasks/task_find_straingst_fasta.wdl" as find_straingst_fasta_task
 import "../tasks/task_themisto.wdl" as themisto_task
 import "../tasks/task_msweep.wdl" as msweep_task
 import "../tasks/task_mgems.wdl" as mgems_task
 import "../tasks/task_bwa.wdl" as bwa_task
 import "../tasks/task_shovill.wdl" as shovill_task
 import "../tasks/task_pilon.wdl" as pilon_task
-import "../tasks/task_find_straingst_fasta.wdl" as find_straingst_fasta_task
 import "../tasks/task_bcftools_view.wdl" as bcftools_view_task 
 import "../tasks/task_shovill.wdl" as shovill_task 
 import "../tasks/task_snippy_variants.wdl" as snippy_variants_task 
-
-
 
 workflow mgems_from_straingst {
     meta {
         author: "Marco Teixeira"
         email: "mcarvalh@broadinstitute.org"
-        description: "Calls variants from plate swipe data with mGEMS and Pilon/Snippy, given a set of StrainGST outputs."
+        description: "Calls variants from plate swipe data with mGEMS and Pilon/Snippy."
     }
     input {
         String samplename
         File reads1 
         File reads2
         String query_strain
-        Array[File] straingst_strains
-        String straingst_fasta_location
+        File reference_genome
+        File themisto_index 
+        File clustering
         # Themisto options
         String themisto_docker_image = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/themisto:3.2.2"
-        Int themisto_kmer_size = 31
         Int themisto_cpu = 4
         Int themisto_memory = 32
         Int themisto_disk_size = 64
@@ -61,21 +57,13 @@ workflow mgems_from_straingst {
         Int snippy_cpus = 8
         Int snippy_memory = 32
     }
-    call find_straingst_fasta_task.find_straingst_fasta {
+    call themisto_task.themisto_align as themisto {
         input:
-            query_strain = query_strain,
-            straingst_strains = straingst_strains,
-            fasta_location = straingst_fasta_location
-    }
-    call themisto_task.themisto {
-        input:
-            references = find_straingst_fasta.all_strains_fasta,
-            reference_names = find_straingst_fasta.strain_names,
+            themisto_index = themisto_index,
             reads1 = reads1,
             reads2 = reads2,
             samplename = samplename,
             docker = themisto_docker_image,
-            kmer_size = themisto_kmer_size,
             cpu = themisto_cpu,
             memory = themisto_memory,
             disk_size = themisto_disk_size
@@ -84,7 +72,7 @@ workflow mgems_from_straingst {
         input:
             alignment_1 = themisto.themisto_alignment1,
             alignment_2 = themisto.themisto_alignment2,
-            clustering = themisto.clustering,
+            clustering = clustering,
             samplename = samplename,
             docker = msweep_docker_image
     }
@@ -92,12 +80,12 @@ workflow mgems_from_straingst {
         input:
             reads_1 = reads1,
             reads_2 = reads2,
-            themisto_index = themisto.themisto_index,
+            themisto_index = themisto_index,
             alignment_1 = themisto_alignment1,
             alignment_2 = themisto_alignment2,
             msweep_probabilities = msweep.msweep_probabilities,
             msweep_abundances = msweep.msweep_abundances,
-            clustering = themisto.clustering,
+            clustering = clustering,
             samplename = samplename,
             query = query_strain,
             docker = mgems_docker_image,
@@ -118,7 +106,7 @@ workflow mgems_from_straingst {
         }
         call snippy_variants_task.snippy_variants {
             input:
-                reference_genome_file = find_straingst_fasta.query_fasta,
+                reference_genome_file = reference_genome,
                 contigs = shovill_pe.assembly_fasta,
                 samplename = samplename,
                 docker = snippy_docker,
@@ -132,14 +120,14 @@ workflow mgems_from_straingst {
                 read1 = mgems.mgems_query_reads_1,
                 read2 = mgems.mgems_query_reads_2,
                 samplename = samplename,
-                reference_genome = find_straingst_fasta.query_fasta,
+                reference_genome = reference_genome,
                 cpu = bwa_cpu,
                 disk_size = bwa_disk_size,
                 memory = bwa_memory
         }
         call pilon_task.pilon {
             input:
-                assembly = find_straingst_fasta.query_fasta,
+                assembly = reference_genome,
                 bam = bwa.sorted_bam,
                 bai = bwa.sorted_bai,
                 samplename = samplename,
@@ -160,8 +148,6 @@ workflow mgems_from_straingst {
         # Themisto outputs
         File themisto_alignment1 = themisto.themisto_alignment1
         File themisto_alignment2 = themisto.themisto_alignment2
-        File themisto_index = themisto.themisto_index
-        File clustering = themisto.clustering
         String themisto_docker = themisto.themisto_docker
         # mSWEEP outputs
         File msweep_abundances = msweep.msweep_abundances
