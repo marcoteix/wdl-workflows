@@ -153,7 +153,8 @@ task themisto_align {
     echo "Creating a file with paths to the reference FASTAs..."
 
     # Untar index
-    tar -xzfv ~{themisto_index} -C ./index
+    mkdir index
+    tar -xzf ~{themisto_index} -C ./index
 
     # Rename index files so we get a known prefix
     mv index/*.tdbg themisto_index.tdbg
