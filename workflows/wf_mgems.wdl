@@ -10,7 +10,7 @@ import "../tasks/task_bcftools_view.wdl" as bcftools_view_task
 import "../tasks/task_shovill.wdl" as shovill_task 
 import "../tasks/task_snippy_variants.wdl" as snippy_variants_task 
 
-workflow mgems_from_straingst {
+workflow mgems_standalone {
     meta {
         author: "Marco Teixeira"
         email: "mcarvalh@broadinstitute.org"
@@ -32,12 +32,12 @@ workflow mgems_from_straingst {
         # mSWEEP options
         String msweep_docker_image = "quay.io/biocontainers/msweep:2.2.1--h503566f_1"
         Int msweep_cpu = 4
-        Int msweep_memory = 16
+        Int msweep_memory = 32
         Int msweep_disk_size = 64
         # mGEMS options
         String mgems_docker_image = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/mgems:1.3.3"
         Int mgems_cpu = 1
-        Int mgems_memory = 16
+        Int mgems_memory = 32
         Int mgems_disk_size = 64
         # bwa options
         Int bwa_cpu = 4
@@ -74,6 +74,8 @@ workflow mgems_from_straingst {
             alignment_2 = themisto.themisto_alignment2,
             clustering = clustering,
             samplename = samplename,
+            memory = msweep_memory,
+            cpu = msweep_cpu,
             docker = msweep_docker_image
     }
     call mgems_task.mgems {
