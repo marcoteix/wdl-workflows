@@ -32,7 +32,8 @@ task mgems {
         -o ~{samplename} \
         --probs ~{msweep_probabilities} \
         -a ~{msweep_abundances} \
-        --index ./themisto_index
+        --index ./themisto_index \
+        --groups ~{query}
 
     # Find output files
     printf "%s\n" ~{samplename}/*.fastq.gz > BINS.txt
