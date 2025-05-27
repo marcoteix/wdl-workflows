@@ -2,7 +2,7 @@ version 1.0
 
 import "../tasks/task_themisto.wdl" as themisto_task
 
-workflow themisto_index {
+workflow make_themisto_index {
     meta {
         author: "Marco Teixeira"
         email: "mcarvalh@broadinstitute.org"

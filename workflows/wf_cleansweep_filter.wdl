@@ -1,6 +1,7 @@
 version 1.0
 
 import "../tasks/task_cleansweep_filter.wdl" as cleansweep_filter_task
+import "../tasks/task_bcftools_view.wdl" as bcftools_view_task
 
 workflow cleansweep_filter {
     meta {
@@ -46,8 +47,25 @@ workflow cleansweep_filter {
             docker = cleansweep_docker,
             cpu = cleansweep_cpu
     }
+    call bcftools_view_task.bcftools_view as variants_view {
+        input:
+            vcf = cleansweep_filter.cleansweep_variants,
+            samplename = samplename,
+            output_type = "v",
+            output_extension = "vcf",
+            query = "-i \'INFO/AC > 0\' -f \'PASS,.\'"
+    }
+    call bcftools_view_task.bcftools_view as full_view {
+        input:
+            vcf = cleansweep_filter.cleansweep_variants,
+            samplename = samplename,
+            output_type = "z",
+            output_extension = "vcf.gz",
+            query = ""
+    }
     output {
-        File cleansweep_variants = cleansweep_filter.cleansweep_variants
+        File cleansweep_variants = variants_view.output_vcf
+        File cleansweep_full_vcf = full_view.output_vcf
         File cleansweep_filter_swp = cleansweep_filter.cleansweep_filter
         File cleansweep_report = cleansweep_filter.cleansweep_report
         File cleansweep_allele_depths_plot = cleansweep_filter.cleansweep_allele_depths_plot

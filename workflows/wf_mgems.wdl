@@ -137,13 +137,21 @@ workflow mgems_standalone {
                 memory = pilon_memory,
                 disk_size = pilon_disk_size
         }
-        call bcftools_view_task.bcftools_view {
+        call bcftools_view_task.bcftools_view as variants_view {
             input:
                 vcf = pilon.vcf,
                 samplename = samplename,
                 output_type = "v",
                 output_extension = "vcf",
                 query = "-i \'INFO/AC > 0\' -f \'PASS,.\'"
+        }
+        call bcftools_view_task.bcftools_view as full_view{
+            input:
+                vcf = pilon.vcf,
+                samplename = samplename,
+                output_type = "z",
+                output_extension = "vcf.gz",
+                query = ""
         }
     }
     output {
@@ -161,7 +169,8 @@ workflow mgems_standalone {
         File? mgems_query_reads_2 = mgems.mgems_query_reads_2
         String mgems_docker = mgems.mgems_docker
         # Output VCF
-        File variants_vcf = select_first([bcftools_view.output_vcf, snippy_variants.snippy_variants_vcf])
+        File variants_vcf = select_first([variants_view.output_vcf, snippy_variants.snippy_variants_vcf])
+        File? full_vcf = full_view.output_vcf 
         # BWA and Pilon outputs
         String? pilon_version = pilon.pilon_version
         String? pilon_docker = pilon.pilon_docker

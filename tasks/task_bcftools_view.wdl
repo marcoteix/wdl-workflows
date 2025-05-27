@@ -15,14 +15,14 @@ task bcftools_view {
     mkdir -p ~{samplename}
 
     bcftools view  \
-        -o ~{samplename}/~{samplename}.variants.~{output_extension} \
+        -o ~{samplename}/~{samplename}.~{output_extension} \
         -O ~{output_type} \
         ~{query} \
         ~{vcf}
 
   >>>
   output {
-    File output_vcf = "~{samplename}/~{samplename}.variants.~{output_extension}"
+    File output_vcf = "~{samplename}/~{samplename}.~{output_extension}"
   }
   runtime {
     docker: docker

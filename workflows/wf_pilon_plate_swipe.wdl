@@ -57,7 +57,7 @@ workflow pilon_plate_swipe {
             memory = pilon_memory,
             disk_size = pilon_disk_size
     }
-    call bcftools_view_task.bcftools_view {
+    call bcftools_view_task.bcftools_view as variants_view{
         input:
             vcf = pilon.vcf,
             samplename = samplename,
@@ -65,8 +65,17 @@ workflow pilon_plate_swipe {
             output_extension = "vcf",
             query = "-i \'INFO/AC > 0\' -f \'PASS,.\'"
     }
+    call bcftools_view_task.bcftools_view as full_view {
+        input:
+            vcf = pilon.vcf,
+            samplename = samplename,
+            output_type = "z",
+            output_extension = "vcf.gz",
+            query = ""
+    }
     output {
-        File variants_vcf = bcftools_view.output_vcf
+        File variants_vcf = variants_view.output_vcf
+        File full_vcf = full_view.output_vcf
         String pilon_version = pilon.pilon_version
         String pilon_docker = pilon.pilon_docker
         String bwa_version = bwa.bwa_version

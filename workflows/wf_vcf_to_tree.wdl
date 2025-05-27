@@ -1,34 +1,36 @@
 version 1.0
 
-import "../tasks/task_cleansweep_collection.wdl" as cleansweep_collection_task
-import "../tasks/task_multivcf_to_msa.wdl" as multivcf_to_msa_task
+import "../tasks/task_multivcf_to_msa.wdl" as vcf_to_msa_task
+import "../tasks/task_vcf_add_reference.wdl" as add_reference_task
+import "../tasks/task_merge_vcfs.wdl" as merge_vcfs_task
 import "../tasks/task_gubbins.wdl" as gubbins_task
 import "../tasks/task_iqtree2.wdl" as iqtree2_task
 import "../tasks/task_snp_dists.wdl" as snp_dists_task
-import "../tasks/task_vcf_add_reference.wdl" as add_reference_task
 
-workflow cleansweep_vcf_to_tree {
+workflow vcf_to_tree {
     input {
         String collection_name
         Array[String] samplenames
         Array[File] variants_vcfs
-        Float min_ani = 0.998
+        String vcf_filters = "PASS,."
+        String? vcf_include
         Boolean use_gubbins = true
     }
     # Convert a set of VCFs to a multisequence alignment FASTA
-    call cleansweep_collection_task.cleansweep_collection {
+    call merge_vcfs_task.merge_vcfs {
         input:
             samplenames = samplenames,
             vcfs = variants_vcfs,
             collection_name = collection_name,
-            min_ani = min_ani
+            filters = vcf_filters,
+            include = vcf_include
     }
     call add_reference_task.vcf_add_reference {
         input:
-            merged_vcf = cleansweep_collection.merged_vcf,
+            merged_vcf = merge_vcfs.merged_vcf,
             collection_name = collection_name
     }
-    call multivcf_to_msa_task.multivcf_to_msa {
+    call vcf_to_msa_task.multivcf_to_msa {
         input:
             vcf = vcf_add_reference.vcf_out,
             collection_name = collection_name

@@ -6,7 +6,7 @@ task cleansweep_collection {
         Array[String] samplenames
         String collection_name = "variants"
         Float min_ani = 0.998
-        String docker = "marcoteix/cleansweep:0.0.2"
+        String docker = "marcoteix/cleansweep:main"
         Int memory = 8
         Int disk_size = 32
     }
