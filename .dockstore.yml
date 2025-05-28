@@ -64,3 +64,11 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: Calls variants with BWA and Pilon.
+ - name: CleanSweep_Variants_to_Full_VCF
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_cleansweep_variants_to_full_vcf.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Given an output VCF file from CleanSweep with only the variant sites and the full VCF file used as input for CleanSweep, creates a CleanSweep output VCF containing all sites in the reference.

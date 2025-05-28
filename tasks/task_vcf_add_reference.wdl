@@ -1,14 +1,11 @@
 version 1.0
 
-# Given a set of FASTA files, builds an mSWEEP clusters file placing
-# each FASTA in its own cluster
-
 task vcf_add_reference {
     # Adds genotype information for the reference genome to a VCF file (all sites REF).
   input {
     File merged_vcf 
     String collection_name
-    String docker = "marcoteix/cleansweep:0.0.2"
+    String docker = "marcoteix/cleansweep:main"
   }
   command <<<
 
