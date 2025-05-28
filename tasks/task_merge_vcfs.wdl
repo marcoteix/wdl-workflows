@@ -71,7 +71,6 @@ task merge_vcfs {
   >>>
   output {
     File merged_vcf = "~{collection_name}.merged.vcf.gz"
-    String bcftools_version = read_string("bcftools_version.txt")
   }
   runtime {
     docker: "marcoteix/gemstone-utils:1.0.0"
