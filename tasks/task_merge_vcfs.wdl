@@ -34,7 +34,7 @@ task merge_vcfs {
         # Filter VCFs
         bcftools view \
             -f ~{filters} \
-            ~{'-i ' + include} \
+            ~{'-i \"' + include + '\"'} \
             -o ./vcfs/$name.pass.vcf.gz \
             -O b
 
