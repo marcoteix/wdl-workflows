@@ -9,6 +9,7 @@ task cleansweep_variants_to_full_vcf {
         File cleansweep_input_vcf
         String samplename
         Int min_dp = 0
+        Int memory = 64
         String docker = "marcoteix/cleansweep:main"
     }
     command <<<
@@ -41,10 +42,10 @@ task cleansweep_variants_to_full_vcf {
     }
     runtime {
         docker: docker
-        memory: "32 GB"
+        memory: memory + " GB"
         cpu: 1
-        disks:  "local-disk 10 SSD"
-        disk: "32 GB" # TES
+        disks:  "local-disk 64 SSD"
+        disk: "64 GB" # TES
         preemptible: 0
         maxRetries: 0
     }
