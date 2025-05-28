@@ -15,19 +15,19 @@ task cleansweep_variants_to_full_vcf {
 
         python3 <<CODE
 
-            from cleansweep import vcf 
+        from cleansweep import vcf 
 
-            # Read header in the original VCF
-            header = vcf.VCF("~{cleansweep_input_vcf}") \
-                .get_header()
+        # Read header in the original VCF
+        header = vcf.VCF("~{cleansweep_input_vcf}") \
+            .get_header()
 
-            vcf.write_full_vcf(
-                vcf.VCF("~{cleansweep_output_vcf}").read(chrom=None),
-                full_vcf = "~{cleansweep_input_vcf}",
-                file = "~{samplename}.cleansweep.full.vcf",
-                header = header,
-                min_dp = ~{min_dp}
-            )
+        vcf.write_full_vcf(
+            vcf.VCF("~{cleansweep_output_vcf}").read(chrom=None),
+            full_vcf = "~{cleansweep_input_vcf}",
+            file = "~{samplename}.cleansweep.full.vcf",
+            header = header,
+            min_dp = ~{min_dp}
+        )
         CODE
 
         # Compress output file
