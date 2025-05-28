@@ -41,7 +41,7 @@ task cleansweep_variants_to_full_vcf {
     }
     runtime {
         docker: docker
-        memory: "16 GB"
+        memory: "32 GB"
         cpu: 1
         disks:  "local-disk 10 SSD"
         disk: "32 GB" # TES
