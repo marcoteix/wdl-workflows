@@ -53,7 +53,7 @@ workflow cleansweep_filter {
             samplename = samplename,
             output_type = "v",
             output_extension = "vcf",
-            query = "-i \'INFO/AC > 0\' -f \'PASS,.\'"
+            query = "-i \'INFO/AC > 0\'"
     }
     call bcftools_view_task.bcftools_view as full_view {
         input:
