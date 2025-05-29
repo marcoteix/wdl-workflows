@@ -6,6 +6,8 @@ task vcf_add_reference {
     File merged_vcf 
     String collection_name
     String docker = "marcoteix/cleansweep:main"
+    Int disk_size = 64
+    Int memory = 16
   }
   command <<<
 
@@ -38,10 +40,10 @@ task vcf_add_reference {
   }
   runtime {
     docker: docker
-    memory: "8 GB"
+    memory: memory + " GB"
     cpu: 1
-    disks:  "local-disk 10 SSD"
-    disk: "32 GB" # TES
+    disks:  "local-disk " + disk_size + " SSD"
+    disk: disk_size + " GB" # TES
     preemptible: 0
     maxRetries: 1
   }
