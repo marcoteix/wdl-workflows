@@ -9,6 +9,7 @@ task cleansweep_prepare {
     Int min_length = 150
     String docker = "marcoteix/cleansweep:main"
     Int disk_size = 8
+    Int memory = 16
   }
   command <<<
     
@@ -35,7 +36,7 @@ task cleansweep_prepare {
   }
   runtime {
     docker: docker
-    memory: "4 GB"
+    memory: memory + " GB"
     cpu: 1
     disks:  "local-disk " + disk_size + " SSD"
     disk: disk_size + " GB" # TES
