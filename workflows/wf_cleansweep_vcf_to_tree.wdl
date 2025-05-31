@@ -14,6 +14,7 @@ workflow cleansweep_vcf_to_tree {
         Array[File] variants_vcfs
         Float min_ani = 0.998
         Boolean use_gubbins = true
+        Int min_coverage = 10
     }
     # Convert a set of VCFs to a multisequence alignment FASTA
     call cleansweep_collection_task.cleansweep_collection {
@@ -21,7 +22,8 @@ workflow cleansweep_vcf_to_tree {
             samplenames = samplenames,
             vcfs = variants_vcfs,
             collection_name = collection_name,
-            min_ani = min_ani
+            min_ani = min_ani,
+            min_coverage = min_coverage
     }
     call add_reference_task.vcf_add_reference {
         input:

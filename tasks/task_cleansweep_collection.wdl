@@ -6,6 +6,7 @@ task cleansweep_collection {
         Array[String] samplenames
         String collection_name = "variants"
         Float min_ani = 0.998
+        Int min_coverage = 10
         String docker = "marcoteix/cleansweep:main"
         Int memory = 8
         Int disk_size = 32
@@ -34,6 +35,7 @@ task cleansweep_collection {
         cleansweep collection \
             -o ~{collection_name}.merged.vcf \
             --min-ani ~{min_ani} \
+            --min-coverage ~{min_coverage} \
             --tmp-dir cleansweep_tmp \
             vcfs/*.vcf
 
