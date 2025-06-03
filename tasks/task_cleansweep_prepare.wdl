@@ -23,7 +23,7 @@ task cleansweep_prepare {
         if [[ "$fasta" == *".gz" ]]; then
             echo "Unzipping $fasta..."
             background[i]=${fasta%.gz}
-            gzip -d $fasta
+            sudo gzip -d $fasta
         fi    
         
     done
@@ -32,7 +32,7 @@ task cleansweep_prepare {
     if [[ "$query" == *".gz" ]]; then
             echo "Unzipping $query..."
             query=${query%.gz}
-            gzip -d $query
+            sudo gzip -d $query
     fi 
     
     echo "Preparing reference with CleanSweep prepare..."
