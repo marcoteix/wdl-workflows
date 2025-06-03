@@ -21,19 +21,27 @@ task cleansweep_prepare {
         fasta=${background[i]}
 
         if [[ "$fasta" == *".gz" ]]; then
-            echo "Unzipping $fasta..."
-            background[i]=${fasta%.gz}
-            sudo gzip -d $fasta
+          echo "Unzipping background strain $fasta..."
+          gzip -d $fasta
+          background[i]=${fasta%.gz}
         fi    
+
+        if [ ! -f ${fasta%.gz} ]; then 
+          echo "Failed to unzip $fasta."
+        fi
         
     done
 
     query="~{query_reference}"
     if [[ "$query" == *".gz" ]]; then
-            echo "Unzipping $query..."
-            query=${query%.gz}
-            sudo gzip -d $query
+      echo "Unzipping query strain $query..."
+      gzip -d $query
+      query=${query%.gz}
     fi 
+
+    if [ ! -f ${query%.gz} ]; then 
+      echo "Failed to unzip $query."
+    fi
     
     echo "Preparing reference with CleanSweep prepare..."
 
