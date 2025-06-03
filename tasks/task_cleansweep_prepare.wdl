@@ -12,12 +12,34 @@ task cleansweep_prepare {
     Int memory = 16
   }
   command <<<
+
+    # Unzip references if needed
+    background=( ~{sep=' ' background_references} )
+
+    for i in ${!background[@]}; do
+
+        fasta=${background[i]}
+
+        if [[ "$fasta" == *".gz" ]]; then
+            echo "Unzipping $fasta..."
+            background[i]=${fasta%.gz}
+            gzip -d $fasta
+        fi    
+        
+    done
+
+    query="~{query_reference}"
+    if [[ "$query" == *".gz" ]]; then
+            echo "Unzipping $query..."
+            query=${query%.gz}
+            gzip -d $query
+    fi 
     
     echo "Preparing reference with CleanSweep prepare..."
 
     cleansweep prepare \
-        ~{query_reference} \
-        --background ~{sep=' ' background_references} \
+        $query \
+        --background ${fastas[@]} \
         --min-identity ~{max_identity} \
         --min-length ~{min_length} \
         --output ~{samplename} \
