@@ -14,7 +14,6 @@ workflow snippy {
         File? reads2
         File? contigs
         File reference_genome
-        File themisto_index 
         String docker = "us-docker.pkg.dev/general-theiagen/staphb/snippy:4.6.0"
         Int cpus = 8
         Int memory = 32
