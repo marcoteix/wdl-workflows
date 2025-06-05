@@ -80,3 +80,11 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: Pipeline for strain-specific variant calling from plate swipe data with CleanSweep.
+ - name: Snippy
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_snippy.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Calls variants with Snippy, supporting contigs as input.
