@@ -14,6 +14,7 @@ task gubbins {
     String tree_builder = "raxml"
     String? tree_args
     String nuc_subst_model = "GTRGAMMA"
+    String? extra_options
     Int cpu = 4
     Int disk_size = 100
     Int memory = 32
@@ -31,7 +32,7 @@ task gubbins {
       --tree-builder ~{tree_builder} \
       ~{'--tree-args ' + tree_args} \
       ~{'--model ' + nuc_subst_model} \
-      --threads ~{cpu}
+      --threads ~{cpu} ~{extra_options}
 
     # rename newick files, TSV file, and text file to have matching and appropriate file endings
     mv -v ~{cluster_name}.node_labelled.final_tree.tre ~{cluster_name}.node_labelled.final_tree.nwk
