@@ -6,6 +6,7 @@ import "../tasks/task_cleansweep_prepare.wdl" as cleansweep_prepare_task
 import "../tasks/task_cleansweep_find_straingst_references.wdl" as find_references_task
 import "../tasks/task_bwa.wdl" as bwa_task
 import "../tasks/task_pilon.wdl" as pilon_task
+import "../tasks/task_freebayes.wdl" as freebayes_task
 
 workflow cleansweep {
     meta {
@@ -34,6 +35,8 @@ workflow cleansweep {
         Int alignment_clip = 40
         Int alignment_unpaired = 54
         Int alignment_mismatch = 24
+        # Variant calling options
+        String variant_caller = "pilon"
         # Cleansweep filter options
         Int cleansweep_min_depth = 10
         Int cleansweep_min_alt_bc = 10
@@ -79,19 +82,33 @@ workflow cleansweep {
             unpaired = alignment_unpaired,
             mismatch = alignment_mismatch
     }
-    call pilon_task.pilon {
-        input:
-            assembly = prepare_straingst.cleansweep_reference_fasta,
-            bam = bwa.sorted_bam,
-            bai = bwa.sorted_bai,
-            samplename = samplename,
-            fix = "bases",
-            extra_options = "--nostrays --duplicates"
+    if (variant_caller != "freebayes") {
+        call pilon_task.pilon {
+            input:
+                assembly = prepare_straingst.cleansweep_reference_fasta,
+                bam = bwa.sorted_bam,
+                bai = bwa.sorted_bai,
+                samplename = samplename,
+                fix = "bases",
+                extra_options = "--nostrays --duplicates"
+        }
+    }
+    if (variant_caller == "freebayes") {
+        call freebayes_task.freebayes {
+            input:
+                reference = prepare_straingst.cleansweep_reference_fasta,
+                bam = bwa.sorted_bam,
+                bai = bwa.sorted_bai,
+                samplename = samplename,
+                min_observations = 2,
+                min_allele_fraction = 0.05,
+                ploidy = 1
+        }
     }
     call cleansweep_filter_task.cleansweep_filter {
         input:
             samplename = samplename,
-            variants_vcf = pilon.vcf,
+            variants_vcf = select_first([pilon.vcf, freebayes.vcf]),
             cleansweep_prepare_swp = prepare_straingst.cleansweep_prepare_swp,
             min_depth = cleansweep_min_depth,
             min_alt_bc = cleansweep_min_alt_bc,
@@ -128,7 +145,8 @@ workflow cleansweep {
         File cleansweep_prepare_swp = prepare_straingst.cleansweep_prepare_swp
         String cleansweep_version = prepare_straingst.cleansweep_version
         File cleansweep_alignment = bwa.sorted_bam
-        File cleansweep_pilon_vcf = pilon.vcf
+        File cleansweep_raw_vcf = select_first([pilon.vcf, freebayes.vcf])
+        String cleansweep_variant_caller = variant_caller
         File cleansweep_variants = variants_view.output_vcf
         File cleansweep_full_vcf = full_view.output_vcf
         File cleansweep_filter_swp = cleansweep_filter.cleansweep_filter
