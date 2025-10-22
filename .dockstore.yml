@@ -88,3 +88,11 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: Calls variants with Snippy, supporting contigs as input.
+ - name: Bakta
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_bakta.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Bacterial genome annotation with Bakta.
