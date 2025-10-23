@@ -96,3 +96,11 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: Bacterial genome annotation with Bakta.
+ - name: AMRFinderPlus
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_amrfinderplus.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: AMR gene detection with AMRFinderPlus.

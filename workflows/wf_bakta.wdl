@@ -2,7 +2,7 @@ version 1.0
 
 import "../tasks/task_bakta.wdl" as bakta_task
 
-workflow cleansweep_filter {
+workflow bakta {
     meta {
         author: "Marco Teixeira"
         email: "mcarvalh@broadinstitute.org"
