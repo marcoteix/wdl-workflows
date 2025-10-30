@@ -1,7 +1,7 @@
 version 1.0
 
 task vcf_add_reference {
-    # Adds genotype information for the reference genome to a VCF file (all sites REF).
+  # Adds genotype information for the reference genome to a VCF file (all sites REF).
   input {
     File merged_vcf 
     String collection_name

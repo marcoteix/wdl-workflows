@@ -1,0 +1,13 @@
+#!/bin/bash -e
+
+VERSION="23.04.20"
+
+cd docker/plasmer
+echo Building the Docker image
+docker buildx build \
+    --platform linux/amd64 \
+    -t us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/plasmer:$VERSION \
+    .
+    
+echo Pushing to Docker Hub
+docker push us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/plasmer:$VERSION
