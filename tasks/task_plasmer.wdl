@@ -16,6 +16,7 @@ task plasmer {
   command <<<
 
     # Extract Plasmer databases
+    mkdir plasmer_database
     tar -xvf ~{plasmer_database} -C plasmer_database
 
     # Get Plasmer version
