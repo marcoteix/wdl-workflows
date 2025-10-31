@@ -26,7 +26,7 @@ task plasmer {
     $PLASMER \
         --genome ~{assembly_fasta} \
         --prefix ~{samplename} \
-        --db plasmer_database/ \
+        --db plasmer_database \
         --threads ~{cpu} \
         --minimum_length ~{min_length} \
         --length ~{length} \
