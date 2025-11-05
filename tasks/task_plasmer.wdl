@@ -34,10 +34,10 @@ task plasmer {
 
   >>>
   output {
-    File plasmer_probabilities = "~{samplename}/~{samplename}.plasmer.predProb.tsv"
-    File plasmer_classes = "~{samplename}/~{samplename}.plasmer.predClass.tsv"
-    File plasmer_plasmid_taxa = "~{samplename}/~{samplename}.plasmer.predPlasmids.taxon"
-    File plasmer_plasmid_fasta = "~{samplename}/~{samplename}.plasmer.predPlasmids.fa"
+    File plasmer_probabilities = "~{samplename}/results/~{samplename}.plasmer.predProb.tsv"
+    File plasmer_classes = "~{samplename}/results/~{samplename}.plasmer.predClass.tsv"
+    File plasmer_plasmid_taxa = "~{samplename}/results/~{samplename}.plasmer.predPlasmids.taxon"
+    File plasmer_plasmid_fasta = "~{samplename}/results/~{samplename}.plasmer.predPlasmids.fa"
     String plasmer_version = read_string("VERSION")
     String plasmer_docker = "~{docker}"
   }
