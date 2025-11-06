@@ -20,7 +20,7 @@ task mob_typer {
     mob_typer \
         --multi \
         --infile ~{plasmid_fasta} \
-        --outfile ~{samplename}_mobtyper.txt \
+        --out_file ~{samplename}_mobtyper.txt \
         --num_threads ~{cpu} \
         ~{mob_typer_options}
 
