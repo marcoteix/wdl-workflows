@@ -4,6 +4,7 @@ task multivcf_to_msa {
   input {
     File vcf
     String collection_name = "variants"
+    Int min_samples = 0
     Int memory = 8
     Int disk_size = 16
   }
@@ -15,10 +16,10 @@ task multivcf_to_msa {
         -i ~{vcf} \
         --output-folder "msa" \
         --output-prefix ~{collection_name} \
-        -f -p -m 1
+        -f -p -m ~{min_samples}
 
     # Rename output file
-    mv "msa/~{collection_name}.min1.fasta" "msa/~{collection_name}.fasta"
+    mv "msa/~{collection_name}.min~{min_samples}.fasta" "msa/~{collection_name}.fasta"
 
     # Get versions
     python /tmp/scripts/vcf2phylip.py --version > vcf2phylip_version.txt
