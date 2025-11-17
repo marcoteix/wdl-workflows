@@ -34,6 +34,12 @@ task gubbins {
       ~{'--model ' + nuc_subst_model} \
       --threads ~{cpu} ~{extra_options}
 
+    # Mask original input
+    mask_gubbins_aln.py \
+      --aln ~{alignment} \
+      --gff ~{cluster_name}.recombination_predictions.gff \
+      --out ~{cluster_name}.alignment.fasta
+
     # rename newick files, TSV file, and text file to have matching and appropriate file endings
     mv -v ~{cluster_name}.node_labelled.final_tree.tre ~{cluster_name}.node_labelled.final_tree.nwk
     mv -v ~{cluster_name}.per_branch_statistics.csv ~{cluster_name}.per_branch_statistics.tsv
@@ -47,6 +53,7 @@ task gubbins {
     File gubbins_final_tree = "~{cluster_name}.final_tree.nwk"
     File gubbins_final_labelled_tree = "~{cluster_name}.node_labelled.final_tree.nwk"
     File gubbins_polymorphic_fasta = "~{cluster_name}.filtered_polymorphic_sites.fasta"
+    File gubbins_fasta = "~{cluster_name}.alignment.fasta"
     File gubbins_recombination_gff = "~{cluster_name}.recombination_predictions.gff"
     File gubbins_branch_stats = "~{cluster_name}.per_branch_statistics.tsv"
   }

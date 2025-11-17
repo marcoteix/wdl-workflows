@@ -46,18 +46,18 @@ workflow cleansweep_vcf_to_tree {
     # Create a ML tree with IQTree2
     call iqtree2_task.iqtree2 {
         input:
-            alignment = select_first([gubbins.gubbins_polymorphic_fasta, multivcf_to_msa.msa]),
+            alignment = select_first([gubbins.gubbins_fasta, multivcf_to_msa.msa]),
             cluster_name = collection_name
     }
     # Create a pairwise SNP matrix
     call snp_dists_task.snp_dists {
         input:
-            alignment = select_first([gubbins.gubbins_polymorphic_fasta, multivcf_to_msa.msa]),
+            alignment = select_first([gubbins.gubbins_fasta, multivcf_to_msa.msa]),
             cluster_name = collection_name
     }
     output {
 
-        File msa_fasta = select_first([gubbins.gubbins_polymorphic_fasta, multivcf_to_msa.msa])
+        File msa_fasta = select_first([gubbins.gubbins_fasta, multivcf_to_msa.msa])
         File merged_vcf = vcf_add_reference.vcf_out
         File vcf_to_tree_final_tree = iqtree2.ml_tree
 
