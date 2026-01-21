@@ -112,3 +112,11 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: Annotates plasmid contigs with Plasmer and types them with MOB-typer.
+ - name: FastANI_Contigs
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_fastani_contigs.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Calculates the ANI between contigs in a set of samples with fastANI.
