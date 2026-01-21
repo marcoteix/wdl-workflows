@@ -31,6 +31,12 @@ task fastani {
     ls -d reference_fastas/*.fa > reference_fof.txt 
     ls -d query_fastas/*.fa > query_fof.txt 
 
+    echo "Reference files:"
+    cat reference_fof.txt
+
+    echo "Query files:"
+    cat query_fof.txt
+
     # Run fastANI
     fastANI \
         --refList reference_fof.txt \
