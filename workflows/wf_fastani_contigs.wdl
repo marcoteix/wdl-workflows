@@ -35,5 +35,6 @@ workflow fastani_contigs {
     output {
         String fastani_version = fastani.fastani_version
         File fastani_results = fastani.fastani_results
+        File fastani_concatenated_fasta = concat_fastas.concatenated
     }
 }
