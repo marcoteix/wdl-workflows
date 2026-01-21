@@ -28,8 +28,8 @@ task fastani {
     awk '/^>/ {split(substr($0,2),a," "); OUT="query_fastas/" a[1] ".fa"; print $0 >OUT; next} OUT{print >OUT}' ~{query}
 
     # Write a file of files for the reference and query
-    ls -d reference_fastas/*.fa > reference_fof.txt 
-    ls -d query_fastas/*.fa > query_fof.txt 
+    find reference_fastas/ -type f > reference_fof.txt 
+    find query_fastas/ -type f > query_fof.txt 
 
     echo "Reference files:"
     cat reference_fof.txt
