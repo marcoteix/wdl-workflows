@@ -4,6 +4,7 @@ task mmseqs2_search {
   input {
     File query # Either a FASTA file or an MMseqs2 database
     File reference # An MMseqs2 database as a tar archive
+    String reference_name
     String samplename
     String docker = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/mmseqs2:8cc5ce367b5638c4306c2d7cfc652dd099a4643f"
     Int search_type = 3 # Default is 3 (nucleotide)
@@ -16,12 +17,11 @@ task mmseqs2_search {
   command <<<
 
     # Untar database
-    mkdir reference
     tar -xzvf ~{reference}
     
     mmseqs easy-search \
         ~{query} \
-        db \
+        db/~{reference_name} \
         ~{samplename}.mmseqs2.tsv \
         tmp \
         --search-type ~{search_type} \

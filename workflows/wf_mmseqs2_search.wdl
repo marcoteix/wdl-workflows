@@ -12,12 +12,14 @@ workflow mmseqs2_search {
         String samplename
         File query
         File reference
+        String reference_name
     }
     call mmseqs2_search_task.mmseqs2_search {
         input:
             query = query,
             reference = reference,
-            samplename = samplename
+            samplename = samplename,
+            reference_name = reference_name
     }
     output {
         File mmseqs2_alignment = mmseqs2_search.mmseqs2_alignment
