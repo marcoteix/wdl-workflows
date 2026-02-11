@@ -3,7 +3,7 @@ version 1.0
 task mmseqs2_search {
   input {
     File query # Either a FASTA file or an MMseqs2 database
-    File reference # Either a FASTA file or an MMseqs2 database
+    File reference # An MMseqs2 database as a tar archive
     String samplename
     String docker = "ghcr.io/soedinglab/mmseqs2"
     Int search_type = 3 # Default is 3 (nucleotide)
@@ -14,10 +14,13 @@ task mmseqs2_search {
     Int disk_size = 100
   }
   command <<<
+
+    # Untar database
+    tar -xzvf ~{reference} -C ./reference_db
     
     easy-search \
         ~{query} \
-        ~{reference} \
+        reference_db \
         ~{samplename}.mmseqs2.tsv \
         tmp \
         --search-type ~{search_type} \
