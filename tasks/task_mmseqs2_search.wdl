@@ -16,11 +16,12 @@ task mmseqs2_search {
   command <<<
 
     # Untar database
-    tar -xzvf ~{reference} -C ./reference_db
+    mkdir reference
+    tar -xzvf ~{reference}
     
     easy-search \
         ~{query} \
-        reference_db \
+        db \
         ~{samplename}.mmseqs2.tsv \
         tmp \
         --search-type ~{search_type} \
