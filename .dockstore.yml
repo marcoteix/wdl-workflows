@@ -122,7 +122,7 @@ workflows:
    topic: Calculates the ANI between contigs in a set of samples with fastANI.
  - name: MMseqs2_Search
    subclass: WDL
-   primaryDescriptorPath: /workflows/wf_fastani_contigs.wdl
+   primaryDescriptorPath: /workflows/wf_mmseqs2_search.wdl
    authors:
     - orcid: 0000-0002-7219-0478
    topic: Many to many sequence search with MMseqs2.
