@@ -19,7 +19,7 @@ task mmseqs2_search {
     mkdir reference
     tar -xzvf ~{reference}
     
-    easy-search \
+    mmseqs easy-search \
         ~{query} \
         db \
         ~{samplename}.mmseqs2.tsv \
