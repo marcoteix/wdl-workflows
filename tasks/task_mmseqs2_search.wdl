@@ -5,7 +5,7 @@ task mmseqs2_search {
     File query # Either a FASTA file or an MMseqs2 database
     File reference # An MMseqs2 database as a tar archive
     String samplename
-    String docker = "ghcr.io/soedinglab/mmseqs2"
+    String docker = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/mmseqs2:8cc5ce367b5638c4306c2d7cfc652dd099a4643f"
     Int search_type = 3 # Default is 3 (nucleotide)
     Int format_mode = 4 # Default is 4 (BLAST TSV with headers)
     String extra_options = ""
