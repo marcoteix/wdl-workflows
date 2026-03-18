@@ -3,19 +3,12 @@ version 1.0
 task concat_files {
     input {
         Array[File] files 
-        File? base_file
         String extension = "txt"
         Int memory = 4
     }
     command <<<
 
     touch concatenated.~{extension}
-
-    if [ -f ~{base_file} ]; then 
-
-        cat ~{base_file} >> concatenated.~{extension}
-
-    fi
 
     for file in ~{sep=' ' files}; do 
 

@@ -6,18 +6,16 @@ workflow concatenate {
     meta {
         author: "Marco Teixeira"
         email: "mcarvalh@broadinstitute.org"
-        description: "Concatenates files from multiple samples into a single file. Allows appending to an existing file."
+        description: "Concatenates files from multiple samples into a single file."
     }
     input {
         Array[File] files
-        File? base_file
         String extension = "txt"
         Int memory = 4
     }
     call concat_task.concat_files {
         input:
             files = files,
-            base_file = base_file,
             extension = extension,
             memory = memory
     }

@@ -131,4 +131,4 @@ workflows:
    primaryDescriptorPath: /workflows/wf_concatenate.wdl
    authors:
     - orcid: 0000-0002-7219-0478
-   topic: Concatenates files from multiple samples into a single file. Allows appending to an existing file.
+   topic: Concatenates files from multiple samples into a single file.
