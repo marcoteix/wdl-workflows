@@ -5,6 +5,7 @@ task cleansweep_filter {
     String samplename
     File variants_vcf
     File cleansweep_prepare_swp
+    String method = "mixture"
     Int min_depth = 10
     Int min_alt_bc = 10
     Int min_ref_bc = 0
@@ -40,6 +41,7 @@ task cleansweep_filter {
         ~{samplename}/~{samplename}.pilon.vcf.gz \
         ~{cleansweep_prepare_swp} \
         ~{samplename} \
+        --method ~{method} \
         --min-depth ~{min_depth} \
         --min-alt-bc ~{min_alt_bc} \
         --min-ref-bc ~{min_ref_bc} \

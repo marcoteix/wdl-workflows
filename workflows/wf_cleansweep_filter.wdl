@@ -14,6 +14,7 @@ workflow cleansweep_filter {
         File variants
         File cleansweep_prepare_swp
         # Cleansweep filter options
+        String cleansweep_method = "mixture"
         Int cleansweep_min_depth = 10
         Int cleansweep_min_alt_bc = 10
         Int cleansweep_min_ref_bc = 0
@@ -33,6 +34,7 @@ workflow cleansweep_filter {
             samplename = samplename,
             variants_vcf = variants,
             cleansweep_prepare_swp = cleansweep_prepare_swp,
+            method = cleansweep_method,
             min_depth = cleansweep_min_depth,
             min_alt_bc = cleansweep_min_alt_bc,
             min_ref_bc = cleansweep_min_ref_bc,

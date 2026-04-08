@@ -12,7 +12,7 @@ workflow cleansweep_vcf_to_tree {
         String collection_name
         Array[String] samplenames
         Array[File] variants_vcfs
-        Float min_ani = 0.998
+        Float alpha = 10.0
         Boolean use_gubbins = true
         Int min_coverage = 10
     }
@@ -22,7 +22,7 @@ workflow cleansweep_vcf_to_tree {
             samplenames = samplenames,
             vcfs = variants_vcfs,
             collection_name = collection_name,
-            min_ani = min_ani,
+            alpha = alpha,
             min_coverage = min_coverage
     }
     call add_reference_task.vcf_add_reference {
