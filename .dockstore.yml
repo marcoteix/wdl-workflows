@@ -132,3 +132,9 @@ workflows:
    authors:
     - orcid: 0000-0002-7219-0478
    topic: Concatenates files from multiple samples into a single file.
+ - name: PlasMAAG
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_plasmaag.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+   topic: Assembles paired-end reads with metaSPAdes, identifies candidate plasmids/chromosomes/viruses with PlasMAAG, annotates plasmids with MOB-typer and Plasmer, and maps each sample's assembly contigs back to the discovered plasmid catalog with mmseqs2.
