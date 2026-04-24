@@ -28,6 +28,8 @@ task cleansweep_filter {
 
     mkdir -p ~{samplename}
 
+    touch ~{samplename}/cleansweep.filter.swp
+
     bcftools view \
       ~{variants_vcf} \
       -o ~{samplename}/~{samplename}.pilon.vcf.gz \
