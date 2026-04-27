@@ -9,11 +9,13 @@ task filter_vcf_samples {
     Int disk_size = 16
   }
   command <<<
-    touch excluded_samples.txt 
-    
+    touch excluded_samples.txt
+    touch vcf_input.txt
+
     python3 << 'CODE'
     import subprocess
     import sys
+    import re
 
     vcf = "~{vcf}"
     max_missing_pct = ~{max_missing_pct}
@@ -69,10 +71,56 @@ task filter_vcf_samples {
         with open("keep_samples.txt", "w") as f:
             f.write('\n'.join(keep))
 
+    # Fix undefined INFO/FORMAT tags in the VCF header so bcftools -S can subset samples.
+    # bcftools exits 255 if any tag is used in records but not declared in the header.
+    vcf = "~{vcf}"
+    header = subprocess.run(
+        ["bcftools", "view", "-h", vcf], capture_output=True, text=True, check=True
+    ).stdout
+    defined_info = set(re.findall(r'##INFO=<ID=([^,>]+)', header))
+    defined_fmt  = set(re.findall(r'##FORMAT=<ID=([^,>]+)', header))
+
+    records = subprocess.run(
+        ["bcftools", "view", "-H", vcf], capture_output=True, text=True, check=True
+    ).stdout
+    used_info, used_fmt = set(), set()
+    for line in records.splitlines():
+        cols = line.split('\t')
+        if len(cols) > 7 and cols[7] not in ('.', ''):
+            for f in cols[7].split(';'):
+                t = f.split('=')[0].strip()
+                if t:
+                    used_info.add(t)
+        if len(cols) > 8:
+            for t in cols[8].split(':'):
+                if t:
+                    used_fmt.add(t)
+
+    missing_info = sorted(used_info - defined_info)
+    missing_fmt  = sorted(used_fmt  - defined_fmt)
+    if missing_info or missing_fmt:
+        extra = '\n'.join(
+            [f'##INFO=<ID={t},Number=.,Type=String,Description="Undefined INFO tag">'   for t in missing_info] +
+            [f'##FORMAT=<ID={t},Number=.,Type=String,Description="Undefined FORMAT tag">' for t in missing_fmt]
+        )
+        print(f"Fixing undefined header tags: INFO={missing_info} FORMAT={missing_fmt}", file=sys.stderr)
+        with open('fixed_header.txt', 'w') as fh:
+            fh.write(header.replace('#CHROM', extra + '\n#CHROM', 1))
+        subprocess.run(
+            ["bcftools", "reheader", "-h", "fixed_header.txt", vcf, "-o", "input_for_view.vcf.gz"],
+            check=True
+        )
+        with open('vcf_input.txt', 'w') as fh:
+            fh.write('input_for_view.vcf.gz')
+    else:
+        with open('vcf_input.txt', 'w') as fh:
+            fh.write(vcf)
+
     CODE
 
+    VCF_INPUT=$(cat vcf_input.txt)
     if [ -s excluded_samples.txt ]; then
-      bcftools view -S keep_samples.txt ~{vcf} -O z -o ~{collection_name}_filtered.vcf.gz
+      bcftools view -S keep_samples.txt "${VCF_INPUT}" -O z -o ~{collection_name}_filtered.vcf.gz
     else
       cp ~{vcf} ~{collection_name}_filtered.vcf.gz
     fi
