@@ -38,8 +38,8 @@ task plasmaag {
       tar -xzvf "${archive}" -C "assemblies/${name}" --strip-components=1
     done
 
-    # Build the PlasMAAG TSV: read1 read2 assembly_dir (one row per sample)
-    : > samples.tsv
+    # Build the PlasMAAG TSV: header + one data row per sample
+    printf "read1\tread2\tassembly_dir\n" > samples.tsv
     for i in "${!NAMES[@]}"; do
       printf "%s\t%s\t%s\n" \
         "${READS1[$i]}" \
