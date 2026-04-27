@@ -13,8 +13,8 @@ task plasmaag {
     String collection_name
     String docker = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/plasmaag:1.0.1"
     Int cpu = 16
-    Int memory = 64
-    Int disk_size = 500
+    Int memory = 256
+    Int disk_size = 750
   }
   command <<<
     set -euo pipefail
@@ -56,6 +56,18 @@ task plasmaag {
         --output plasmaag_out \
         --threads ~{cpu} \
         --genomad_db genomad_db
+
+    # PlasMAAG CLI does not propagate snakemake failures (exits 0 even on error).
+    # Detect failure by checking for a required output file, then dump all
+    # internal PlasMAAG log files to stderr so the actual error is visible on Terra.
+    if [ ! -f "plasmaag_out/results/candidate_plasmids.tsv" ]; then
+      echo "ERROR: PlasMAAG did not produce expected outputs. Dumping internal logs:" >&2
+      for log_file in plasmaag_out/log/*; do
+        echo "=== ${log_file} ===" >&2
+        cat "${log_file}" >&2 || true
+      done
+      exit 1
+    fi
 
     # Concatenate per-cluster FASTAs into one file per category.
     # Use nullglob so empty result dirs produce empty FASTAs instead of failing.
