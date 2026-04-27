@@ -11,7 +11,7 @@ task plasmaag {
     Array[File] assembly_archives
     File genomad_db
     String collection_name
-    String docker = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/plasmaag/1.0.1"
+    String docker = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/plasmaag:1.0.1"
     Int cpu = 16
     Int memory = 64
     Int disk_size = 500

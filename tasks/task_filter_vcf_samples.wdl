@@ -9,6 +9,8 @@ task filter_vcf_samples {
     Int disk_size = 16
   }
   command <<<
+    touch excluded_samples.txt 
+    
     python3 << 'CODE'
     import subprocess
     import sys
