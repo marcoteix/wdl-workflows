@@ -11,6 +11,7 @@ task plasmaag {
     Array[File] assembly_archives
     File genomad_db
     String collection_name
+    String? vamb_arguments
     String docker = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/plasmaag:1.0.1"
     Int cpu = 16
     Int memory = 256
@@ -55,7 +56,8 @@ task plasmaag {
         --reads_and_assembly_dir samples.tsv \
         --output plasmaag_out \
         --threads ~{cpu} \
-        --genomad_db genomad_db
+        --genomad_db genomad_db \
+        ~{"--vamb_arguments '" + vamb_arguments + "'"}
 
     # PlasMAAG CLI does not propagate snakemake failures (exits 0 even on error).
     # Detect failure by checking for a required output file, then dump all

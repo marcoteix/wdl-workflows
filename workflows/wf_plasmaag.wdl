@@ -21,6 +21,7 @@ workflow plasmaag_wf {
         File genomad_db
         File plasmer_database
         String collection_name = "plasmaag"
+        String? vamb_arguments
         Boolean run_mmseqs2_search = true
         Int min_contig_length = 1000
         Int max_hits_per_contig = 5
@@ -44,7 +45,8 @@ workflow plasmaag_wf {
             samplenames = samplenames,
             assembly_archives = metaspades.assembly_archive,
             genomad_db = genomad_db,
-            collection_name = collection_name
+            collection_name = collection_name,
+            vamb_arguments = vamb_arguments
     }
 
     # 3. MOB-typer on the concatenated candidate plasmids
