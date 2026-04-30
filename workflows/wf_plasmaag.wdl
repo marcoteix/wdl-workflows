@@ -96,7 +96,8 @@ workflow plasmaag_wf {
         File candidate_plasmids_tsv = plasmaag.candidate_plasmids_tsv
         File candidate_genomes_tsv = plasmaag.candidate_genomes_tsv
         File candidate_virus_tsv = plasmaag.candidate_virus_tsv
-        File plasmaag_scores_tsv = plasmaag.scores_tsv
+        File plasmid_scores_tsv = plasmaag.plasmid_scores_tsv
+        File virus_organism_scores_tsv = plasmaag.virus_organism_scores_tsv
 
         # MOB-typer
         File mob_typer_results = mob_typer.mob_typer_results

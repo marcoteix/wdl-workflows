@@ -100,7 +100,8 @@ task plasmaag {
     File candidate_plasmids_tsv = "plasmaag_out/results/candidate_plasmids.tsv"
     File candidate_genomes_tsv = "plasmaag_out/results/candidate_genomes.tsv"
     File candidate_virus_tsv = "plasmaag_out/results/candidate_virus.tsv"
-    File scores_tsv = "plasmaag_out/results/scores.tsv"
+    File plasmid_scores_tsv = "plasmaag_out/results/plasmid_scores.tsv"
+    File virus_organism_scores_tsv = "plasmaag_out/results/virus_organism_scores.tsv"
 
     String plasmaag_version = read_string("VERSION")
     String plasmaag_docker = "~{docker}"
