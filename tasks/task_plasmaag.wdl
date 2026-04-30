@@ -73,9 +73,9 @@ task plasmaag {
 
     # Concatenate per-cluster FASTAs into one file per category.
     # Use nullglob so empty result dirs produce empty FASTAs instead of failing.
-    plasmid_files=( plasmaag_out/results/candidate_plasmids/*.fa plasmaag_out/results/candidate_plasmids/*.fasta )
-    chrom_files=( plasmaag_out/results/candidate_genomes/*.fa plasmaag_out/results/candidate_genomes/*.fasta )
-    virus_files=( plasmaag_out/results/candidate_virus/*.fa plasmaag_out/results/candidate_virus/*.fasta )
+    plasmid_files=( plasmaag_out/results/candidate_plasmids/*.fna )
+    chrom_files=( plasmaag_out/results/candidate_genomes/*.fna )
+    virus_files=( plasmaag_out/results/candidate_viruses/*.fna )
 
     : > ~{collection_name}_candidate_plasmids.fasta
     if [ ${#plasmid_files[@]} -gt 0 ]; then
