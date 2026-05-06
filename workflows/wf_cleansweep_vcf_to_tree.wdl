@@ -71,12 +71,12 @@ workflow cleansweep_vcf_to_tree {
     # Create a pairwise SNP matrix
     call snp_dists_task.snp_dists {
         input:
-            alignment = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa]),
+            alignment = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa, multivcf_to_msa.msa]),
             cluster_name = collection_name
     }
     output {
 
-        File msa_fasta = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa])
+        File msa_fasta = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa, multivcf_to_msa.msa])
         File merged_vcf = vcf_add_reference.vcf_out
 
         # Sample filtering outputs

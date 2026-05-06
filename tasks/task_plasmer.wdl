@@ -10,10 +10,11 @@ task plasmer {
     Int length = 0
     String docker = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/plasmer:23.04.20"
     Int disk_size = 128
-    Int memory = 16
+    Int memory = 32
     Int cpu = 4
   }
   command <<<
+    set -euo pipefail
 
     # Extract Plasmer databases
     mkdir plasmer_database
