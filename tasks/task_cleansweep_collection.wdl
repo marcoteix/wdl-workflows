@@ -27,6 +27,13 @@ task cleansweep_collection {
         
         done
 
+        # Inject missing INFO header declarations (PILON, LowCov) that bcftools merge
+        # requires but Pilon-generated VCFs often omit from their headers.
+        printf '##INFO=<ID=PILON,Number=.,Type=String,Description="Pilon variant annotation">\n##INFO=<ID=LowCov,Number=0,Type=Flag,Description="Low coverage region">\n' > header_fix.txt
+        for vcf in vcfs/*.vcf; do
+            bcftools annotate -h header_fix.txt -o "${vcf}.tmp" "$vcf" && mv "${vcf}.tmp" "$vcf"
+        done
+
         # Run cleansweep collection
         echo "Merging VCFs with cleansweep collection..."
 
