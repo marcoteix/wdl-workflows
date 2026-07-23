@@ -7,7 +7,8 @@ task cleansweep_collection {
         String collection_name = "variants"
         Float alpha = 10
         Int min_coverage = 10
-        String docker = "marcoteix/cleansweep:main"
+        Boolean exclude = false
+        String docker = "marcoteix/cleansweep:heads-main"
         Int memory = 8
         Int disk_size = 32
     }
@@ -38,12 +39,16 @@ task cleansweep_collection {
         echo "Merging VCFs with cleansweep collection..."
 
         mkdir cleansweep_tmp
+        # Create a file listing excluded samples, even if exclude == False (file 
+        # will be empty and the excluded_samples output array will be empty)
+        touch "excluded.txt"
 
         cleansweep collection \
             -o ~{collection_name}.merged.vcf \
             --alpha ~{alpha} \
             --min-coverage ~{min_coverage} \
             --tmp-dir cleansweep_tmp \
+            ~{true="--exclude --exclude-log excluded.txt" false="" exclude} \
             vcfs/*.vcf
 
         echo "Compressing with bcftools view..."
@@ -58,6 +63,7 @@ task cleansweep_collection {
     >>>
     output {
         File merged_vcf = "~{collection_name}.merged.vcf.gz"
+        Array[String] excluded_samples = read_lines("excluded.txt")
     }
     runtime {
         docker: docker
@@ -65,6 +71,6 @@ task cleansweep_collection {
         cpu: 1
         disks:  "local-disk " + disk_size + " SSD"
         disk: disk_size + " GB"
-        preemptible: 0
+        preemptible: 2
     }
 }

@@ -17,6 +17,7 @@ workflow cleansweep_vcf_to_tree {
         Float alpha = 10.0
         Boolean use_gubbins = true
         Boolean remove_missing_loci = true
+        Boolean exclude = false
         Int min_coverage = 10
         Float max_missing_pct = 20.0
     }
@@ -27,7 +28,8 @@ workflow cleansweep_vcf_to_tree {
             vcfs = variants_vcfs,
             collection_name = collection_name,
             alpha = alpha,
-            min_coverage = min_coverage
+            min_coverage = min_coverage,
+            exclude = exclude
     }
     call add_reference_task.vcf_add_reference {
         input:
@@ -80,7 +82,8 @@ workflow cleansweep_vcf_to_tree {
         File merged_vcf = vcf_add_reference.vcf_out
 
         # Sample filtering outputs
-        Array[String] excluded_samples = filter_vcf_samples.excluded_samples
+        Array[String] collection_excluded_samples = cleansweep_collection.excluded_samples
+        Array[String] low_cov_samples = filter_vcf_samples.excluded_samples
 
         # MSA site filtering outputs
         Int? excluded_msa_sites = filter_msa_sites.excluded_sites_count
