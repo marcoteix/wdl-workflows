@@ -140,7 +140,7 @@ workflows:
    topic: Assembles paired-end reads with metaSPAdes, identifies candidate plasmids/chromosomes/viruses with PlasMAAG, annotates plasmids with MOB-typer and Plasmer, and maps each sample's assembly contigs back to the discovered plasmid catalog with mmseqs2.
  - name: Isolate_and_Plate_Swipe_Tree
    subclass: WDL
-   primaryDescriptorPath: workflows/wf_isolate_plate_sweep_tree.wdl
+   primaryDescriptorPath: /workflows/wf_isolate_plate_sweep_tree.wdl
    authors:
     - orcid: 0000-0002-7219-0478
    topic: Builds a phylogenetic tree with IQTree2 containing genomes from isolates and plate swipes. Plate swipe genomes are filtered using CleanSweep's collection module. 
