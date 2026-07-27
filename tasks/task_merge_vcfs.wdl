@@ -8,7 +8,7 @@ task merge_vcfs {
     String filters = "PASS,."
     String? include
     Int memory = 8
-    Int disk_size = 16
+    Int disk_size = 64
   }
   command <<<
 

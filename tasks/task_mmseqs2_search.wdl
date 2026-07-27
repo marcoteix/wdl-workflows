@@ -39,7 +39,7 @@ task mmseqs2_search {
     cpu: cpu
     disks:  "local-disk " + disk_size + " SSD"
     disk: disk_size + " GB" # TES
-    preemptible: 0
+    preemptible: 1
     maxRetries: 0
   }
 }

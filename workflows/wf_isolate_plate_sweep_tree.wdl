@@ -27,6 +27,8 @@ workflow isolate_plate_swipe_tree {
         Float isolate_max_missing_pct = 20.0
         String isolate_vcf_filters = "PASS,."
         String? isolate_vcf_include
+        Int isolate_merge_disk_size = 64
+        Int isolate_merge_memory = 8
     }
     # ----------------- Plate swipes -----------------
     # Convert plate sweep VCFs to a multisequence alignment FASTA
@@ -59,7 +61,9 @@ workflow isolate_plate_swipe_tree {
             vcfs = isolate_vcfs,
             collection_name = collection_name,
             filters = isolate_vcf_filters,
-            include = isolate_vcf_include
+            include = isolate_vcf_include,
+            disk_size = isolate_merge_disk_size,
+            memory = isolate_merge_memory
     }
     call add_reference_task.vcf_add_reference as isolate_add_reference {
         input:
