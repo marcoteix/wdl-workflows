@@ -9,8 +9,9 @@ task cleansweep_collection {
         Int min_coverage = 10
         Boolean exclude = false
         String docker = "marcoteix/cleansweep:heads-main"
-        Int memory = 8
-        Int disk_size = 32
+        Int memory = 32
+        Int disk_size = 128
+        Int cpu = 8
     }
     command <<<
 
@@ -43,34 +44,28 @@ task cleansweep_collection {
         # will be empty and the excluded_samples output array will be empty)
         touch "excluded.txt"
 
+        # Convert CleanSweep VCFs to an MSA
         cleansweep collection \
-            -o ~{collection_name}.merged.vcf \
+            -o ~{collection_name}_msa.fa \
             --alpha ~{alpha} \
             --min-coverage ~{min_coverage} \
-            --tmp-dir cleansweep_tmp \
+            --n-threads ~{cpu} \
             ~{true="--exclude --exclude-log excluded.txt" false="" exclude} \
             vcfs/*.vcf
-
-        echo "Compressing with bcftools view..."
-
-        bcftools view \
-            -o ~{collection_name}.merged.vcf.gz \
-            -O z \
-            ~{collection_name}.merged.vcf
 
         echo "Done!"
 
     >>>
     output {
-        File merged_vcf = "~{collection_name}.merged.vcf.gz"
+        File msa_fasta = "~{collection_name}_msa.fa"
         Array[String] excluded_samples = read_lines("excluded.txt")
     }
     runtime {
         docker: docker
         memory: memory + " GB"
-        cpu: 1
+        cpu: cpu
         disks:  "local-disk " + disk_size + " SSD"
         disk: disk_size + " GB"
-        preemptible: 2
+        preemptible: 0
     }
 }

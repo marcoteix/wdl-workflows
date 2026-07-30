@@ -1,15 +1,12 @@
 version 1.0
 
 import "../tasks/task_cleansweep_collection.wdl" as cleansweep_collection_task
-import "../tasks/task_multivcf_to_msa.wdl" as multivcf_to_msa_task
-import "../tasks/task_merge_multivcfs.wdl" as merge_multivcfs_task
-import "../tasks/task_merge_vcfs.wdl" as merge_vcfs_task
-import "../tasks/task_filter_vcf_samples.wdl" as filter_vcf_samples_task
+import "../tasks/task_vcf_to_fasta.wdl" as vcf_to_fasta_task
+import "../tasks/task_fastas_to_msa.wdl" as fastas_to_msa_task
 import "../tasks/task_filter_msa_sites.wdl" as filter_msa_sites_task
 import "../tasks/task_gubbins.wdl" as gubbins_task
 import "../tasks/task_iqtree2.wdl" as iqtree2_task
 import "../tasks/task_snp_dists.wdl" as snp_dists_task
-import "../tasks/task_vcf_add_reference.wdl" as add_reference_task
 
 workflow isolate_plate_swipe_tree {
     input {
@@ -18,20 +15,18 @@ workflow isolate_plate_swipe_tree {
         Array[File] plate_swipe_vcfs
         Array[String] isolate_names
         Array[File] isolate_vcfs
+        File reference_fasta
         Float cleansweep_alpha = 10.0
         Boolean cleansweep_exclude = false
         Boolean use_gubbins = true
         Boolean remove_missing_loci = false
         Int plate_swipe_min_coverage = 10
-        Float plate_swipe_max_missing_pct = 20.0
-        Float isolate_max_missing_pct = 20.0
-        String isolate_vcf_filters = "PASS,."
-        String? isolate_vcf_include
-        Int isolate_merge_disk_size = 64
-        Int isolate_merge_memory = 8
+        Int isolate_min_coverage = 10
+        Float max_missing_pct = 20.0
+        Int cleansweep_memory = 32
     }
     # ----------------- Plate swipes -----------------
-    # Convert plate sweep VCFs to a multisequence alignment FASTA
+    # Merge plate swipe VCFs and detect outlier samples with cleansweep
     call cleansweep_collection_task.cleansweep_collection {
         input:
             samplenames = plate_swipe_names,
@@ -39,61 +34,33 @@ workflow isolate_plate_swipe_tree {
             collection_name = collection_name,
             alpha = cleansweep_alpha,
             min_coverage = plate_swipe_min_coverage,
-            exclude = cleansweep_exclude
-    }
-    call add_reference_task.vcf_add_reference as plate_swipe_add_reference {
-        input:
-            merged_vcf = cleansweep_collection.merged_vcf,
-            collection_name = collection_name
-    }
-    # Remove samples with excessive missing data before alignment conversion
-    call filter_vcf_samples_task.filter_vcf_samples as plate_swipe_filter_vcf {
-        input:
-            vcf = plate_swipe_add_reference.vcf_out,
-            collection_name = collection_name,
-            max_missing_pct = plate_swipe_max_missing_pct
+            exclude = cleansweep_exclude,
+            memory = cleansweep_memory
     }
     # ----------------- Isolates -----------------
-    # Merge per-sample VCFs into a multi-sample VCF
-    call merge_vcfs_task.merge_vcfs as merge_isolate_vcf {
-        input:
-            samplenames = isolate_names,
-            vcfs = isolate_vcfs,
-            collection_name = collection_name,
-            filters = isolate_vcf_filters,
-            include = isolate_vcf_include,
-            disk_size = isolate_merge_disk_size,
-            memory = isolate_merge_memory
-    }
-    call add_reference_task.vcf_add_reference as isolate_add_reference {
-        input:
-            merged_vcf = merge_isolate_vcf.merged_vcf,
-            collection_name = collection_name
-    }
-    # Remove samples with excessive missing data before alignment conversion
-    call filter_vcf_samples_task.filter_vcf_samples as isolate_filter_vcf {
-        input:
-            vcf = isolate_add_reference.vcf_out,
-            collection_name = collection_name,
-            max_missing_pct = isolate_max_missing_pct
+    # Convert each isolate VCF to a whole-genome FASTA
+    scatter (pair in zip(isolate_names, isolate_vcfs)) {
+        call vcf_to_fasta_task.vcf_to_fasta as isolate_vcf_to_fasta {
+            input:
+                vcf = pair.right,
+                sequence_name = pair.left,
+                min_dp = isolate_min_coverage
+        }
     }
     # ----------------- Merge data types -----------------
-    call merge_multivcfs_task.merge_multivcfs {
-        input: 
-            vcfs = [plate_swipe_filter_vcf.filtered_vcf, isolate_filter_vcf.filtered_vcf],
-            collection_name = collection_name,
-    }
-    # Convert merged VCF into a MSA FASTA
-    call multivcf_to_msa_task.multivcf_to_msa as vcf_to_msa {
+    # Assemble all FASTAs into a joint MSA; filters samples with excessive missing data
+    call fastas_to_msa_task.fastas_to_msa {
         input:
-            vcf = merge_multivcfs.merged_vcf,
-            collection_name = collection_name
+            fastas = flatten([[cleansweep_collection.msa_fasta], isolate_vcf_to_fasta.fasta]),
+            reference_fasta = reference_fasta,
+            collection_name = collection_name,
+            max_missing_pct = max_missing_pct
     }
     # Remove alignment positions with any unknown base (N or -)
     if (remove_missing_loci) {
         call filter_msa_sites_task.filter_msa_sites {
             input:
-                msa = vcf_to_msa.msa,
+                msa = fastas_to_msa.msa,
                 collection_name = collection_name
         }
     }
@@ -101,30 +68,29 @@ workflow isolate_plate_swipe_tree {
     if (use_gubbins) {
         call gubbins_task.gubbins {
             input:
-                alignment = select_first([filter_msa_sites.filtered_msa, vcf_to_msa.msa]),
+                alignment = select_first([filter_msa_sites.filtered_msa, fastas_to_msa.msa]),
                 cluster_name = collection_name
         }
     }
     # Create a ML tree with IQTree2
     call iqtree2_task.iqtree2 {
         input:
-            alignment = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa, vcf_to_msa.msa]),
+            alignment = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa, fastas_to_msa.msa]),
             cluster_name = collection_name
     }
     # Create a pairwise SNP matrix
     call snp_dists_task.snp_dists {
         input:
-            alignment = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa, vcf_to_msa.msa]),
+            alignment = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa, fastas_to_msa.msa]),
             cluster_name = collection_name
     }
     output {
-        File msa_fasta = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa, vcf_to_msa.msa])
-        File merged_vcf = merge_multivcfs.merged_vcf
+        File msa_fasta = select_first([gubbins.gubbins_fasta, filter_msa_sites.filtered_msa, fastas_to_msa.msa])
+        File plate_swipe_msa_fasta = cleansweep_collection.msa_fasta
 
         # Sample filtering outputs
         Array[String] collection_excluded_samples = cleansweep_collection.excluded_samples
-        Array[String] low_cov_plate_swipes = plate_swipe_filter_vcf.excluded_samples
-        Array[String] low_cov_isolates = isolate_filter_vcf.excluded_samples
+        Array[String] low_cov_samples = fastas_to_msa.excluded_samples
 
         # MSA site filtering outputs
         Int? excluded_msa_sites = filter_msa_sites.excluded_sites_count
