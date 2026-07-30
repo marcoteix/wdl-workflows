@@ -29,61 +29,73 @@ IUPAC_CODES = {
 sequence_name = "~{sequence_name}"
 min_dp = ~{min_dp}
 
-# Group calls by position; a position may appear multiple times after norm splits
-# multi-allelic sites into separate rows.
-positions = {}
-with open("positions.tsv") as f:
-    for line in f:
-        parts = line.rstrip("\n").split("\t")
-        if len(parts) < 5:
-            continue
-        pos, ref, alt, dp_str, gt = parts[0], parts[1], parts[2], parts[3], parts[4]
-        pos = int(pos)
-        try:
-            depth = int(dp_str)
-        except ValueError:
-            depth = None  # DP absent — skip depth filter for this call
-        positions.setdefault(pos, []).append((ref, alt, depth, gt))
-
-if not positions:
-    print("WARNING: No positions found in VCF", file=sys.stderr)
-    with open(f"{sequence_name}.fasta", "w") as f:
-        f.write(f">{sequence_name}\n\n")
-    sys.exit(0)
-
-max_pos = max(positions.keys())
-seq = bytearray(b"N" * max_pos)
-
-for pos, calls in positions.items():
+def resolve_calls(calls):
+    """Determine the IUPAC nucleotide for a list of calls at one position."""
     bases = []
-    use_n = False
     for ref, alt, depth, gt in calls:
         if depth is not None and depth < min_dp:
-            use_n = True
-            break
-        # Normalize phased/unphased diploid (0|1 → [0, 1]) and haploid (1 → [1])
-        alleles = gt.replace("|", "/").split("/")
-        for allele in alleles:
+            return "N"
+        for allele in gt.replace("|", "/").split("/"):
             if allele == ".":
-                use_n = True
-                break
+                return "N"
             elif allele == "0":
                 bases.append(ref)
             elif allele == "1":
                 bases.append(alt)
             else:
-                use_n = True
-                break
-        if use_n:
-            break
+                return "N"
+    if not bases:
+        return "N"
+    return IUPAC_CODES.get("".join(sorted(set(bases))), "N")
 
-    if use_n or not bases:
-        nuc = "N"
-    else:
-        key = "".join(sorted(set(bases)))
-        nuc = IUPAC_CODES.get(key, "N")
+# First pass: find the maximum position without keeping any records in memory.
+# positions.tsv is position-sorted, so this is just a scan of the first column.
+max_pos = 0
+with open("positions.tsv") as f:
+    for line in f:
+        col = line.split("\t", 1)
+        try:
+            p = int(col[0])
+            if p > max_pos:
+                max_pos = p
+        except (ValueError, IndexError):
+            pass
 
-    seq[pos - 1] = ord(nuc)
+if max_pos == 0:
+    print("WARNING: No positions found in VCF", file=sys.stderr)
+    with open(f"{sequence_name}.fasta", "w") as f:
+        f.write(f">{sequence_name}\n\n")
+    sys.exit(0)
+
+seq = bytearray(b"N" * max_pos)
+
+# Second pass: stream line by line, accumulating calls only for the current
+# position (multi-allelic sites appear on consecutive rows after bcftools norm).
+with open("positions.tsv") as f:
+    prev_pos = None
+    calls = []
+    for line in f:
+        parts = line.rstrip("\n").split("\t")
+        if len(parts) < 5:
+            continue
+        try:
+            pos = int(parts[0])
+        except ValueError:
+            continue
+        ref, alt, dp_str, gt = parts[1], parts[2], parts[3], parts[4]
+        try:
+            depth = int(dp_str)
+        except ValueError:
+            depth = None  # DP absent — skip depth filter for this call
+
+        if prev_pos is not None and pos != prev_pos:
+            seq[prev_pos - 1] = ord(resolve_calls(calls))
+            calls = []
+        calls.append((ref, alt, depth, gt))
+        prev_pos = pos
+
+    if calls and prev_pos is not None:
+        seq[prev_pos - 1] = ord(resolve_calls(calls))
 
 sequence = seq.decode("ascii")
 with open(f"{sequence_name}.fasta", "w") as f:
@@ -104,6 +116,6 @@ CODE
     cpu: 1
     disks: "local-disk " + disk_size + " SSD"
     disk: disk_size + " GB"
-    preemptible: 1
+    preemptible: 0
   }
 }
