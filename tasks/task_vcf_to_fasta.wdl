@@ -6,8 +6,8 @@ task vcf_to_fasta {
     String sequence_name
     Int min_dp = 10
     String docker = "marcoteix/cleansweep:heads-main"
-    Int memory = 8
-    Int disk_size = 16
+    Int memory = 16
+    Int disk_size = 64
   }
   command <<<
 
