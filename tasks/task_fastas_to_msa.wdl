@@ -7,8 +7,8 @@ task fastas_to_msa {
     String collection_name
     Float max_missing_pct = 20.0
     String docker = "marcoteix/cleansweep:heads-main"
-    Int memory = 8
-    Int disk_size = 16
+    Int memory = 16
+    Int disk_size = 64
   }
   command <<<
 
