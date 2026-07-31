@@ -19,11 +19,22 @@ task fastas_to_msa {
     printf '%s\n' "${fastas[@]}" > fasta_paths.txt
 
     python3 << 'CODE'
+import string
 import sys
 
 max_missing_pct = ~{max_missing_pct}
 reference_fasta  = "~{reference_fasta}"
 collection_name  = "~{collection_name}"
+
+# The MSA may only contain A, C, G, T, N, and -. Any other character (IUPAC
+# ambiguity codes such as R/Y/S/W/K/M/B/D/H/V, or anything unexpected) is
+# collapsed to N. Sequences are uppercased in iter_fasta before this table is
+# applied, so only the uppercase letters need to be covered.
+_SANITIZE_TABLE = {ord(c): ord('N') for c in string.ascii_uppercase if c not in "ACGTN"}
+
+def sanitize_seq(seq):
+    """Replace IUPAC ambiguity codes (and any other non-ACGTN- character) with N."""
+    return seq.translate(_SANITIZE_TABLE)
 
 def iter_fasta(path):
     """Yield (name, sequence) one sequence at a time without buffering the file."""
@@ -33,13 +44,13 @@ def iter_fasta(path):
             line = line.rstrip('\n')
             if line.startswith('>'):
                 if name is not None:
-                    yield name, ''.join(seq_lines).upper()
+                    yield name, sanitize_seq(''.join(seq_lines).upper())
                 name = line[1:].split()[0]
                 seq_lines = []
             elif line:
                 seq_lines.append(line)
     if name is not None:
-        yield name, ''.join(seq_lines).upper()
+        yield name, sanitize_seq(''.join(seq_lines).upper())
 
 def write_seq(fh, name, seq, line_width=60):
     fh.write(f">{name}\n")

@@ -24,7 +24,7 @@ Converts a single-sample whole-genome VCF into a FASTA sequence. Uses `bcftools`
 
 ### `fastas_to_msa` · [tasks/task_fastas_to_msa.wdl](tasks/task_fastas_to_msa.wdl)
 
-Assembles a multisequence alignment (MSA) from a set of FASTA files and a reference sequence. Each input FASTA can contain a single sequence or be an existing MSA (multiple sequences). All sequences must share the same length as the reference; the task exits with an error otherwise. Samples with more than `max_missing_pct`% N bases are excluded from the output; the reference is always retained.
+Assembles a multisequence alignment (MSA) from a set of FASTA files and a reference sequence. Each input FASTA can contain a single sequence or be an existing MSA (multiple sequences). All sequences must share the same length as the reference; the task exits with an error otherwise. IUPAC ambiguity codes (and any other character outside A/C/G/T/N/-) are collapsed to `N` before filtering, so the output MSA only ever contains `A, C, G, T, N, -`. Samples with more than `max_missing_pct`% N bases (after this sanitization) are excluded from the output; the reference is always retained.
 
 | Input | Type | Default | Description |
 |---|---|---|---|
@@ -32,9 +32,9 @@ Assembles a multisequence alignment (MSA) from a set of FASTA files and a refere
 | `reference_fasta` | `File` | — | Reference sequence; defines the expected length and is always written first in the output |
 | `collection_name` | `String` | — | Prefix for the output filename |
 | `max_missing_pct` | `Float` | `20.0` | Maximum % of N bases allowed before a sample is excluded |
-| `docker` | `String` | `marcoteix/cleansweep:heads-main` | |
-| `memory` | `Int` | `8` | GB |
-| `disk_size` | `Int` | `16` | GB |
+| `docker` | `String` | `marcoteix/cleansweep:refs-heads-main` | |
+| `memory` | `Int` | `16` | GB |
+| `disk_size` | `Int` | `64` | GB |
 
 | Output | Type | Description |
 |---|---|---|
