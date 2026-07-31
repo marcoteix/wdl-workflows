@@ -8,7 +8,7 @@ task cleansweep_collection {
         Float alpha = 10
         Int min_coverage = 10
         Boolean exclude = false
-        String docker = "marcoteix/cleansweep:heads-main"
+        String docker = "marcoteix/cleansweep:refs-heads-main"
         Int memory = 32
         Int disk_size = 128
         Int cpu = 8

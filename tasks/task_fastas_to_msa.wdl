@@ -6,7 +6,7 @@ task fastas_to_msa {
     File reference_fasta
     String collection_name
     Float max_missing_pct = 20.0
-    String docker = "marcoteix/cleansweep:heads-main"
+    String docker = "marcoteix/cleansweep:refs-heads-main"
     Int memory = 16
     Int disk_size = 64
   }

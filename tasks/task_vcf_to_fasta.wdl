@@ -5,7 +5,7 @@ task vcf_to_fasta {
     File vcf
     String sequence_name
     Int min_dp = 10
-    String docker = "marcoteix/cleansweep:heads-main"
+    String docker = "marcoteix/cleansweep:refs-heads-main"
     Int memory = 16
     Int disk_size = 64
   }
