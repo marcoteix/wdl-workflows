@@ -4,6 +4,7 @@ task cleansweep_collection {
     input {
         Array[File] vcfs
         Array[String] samplenames
+        File? reference_fasta
         String collection_name = "variants"
         Float alpha = 10
         Int min_coverage = 10
@@ -47,6 +48,7 @@ task cleansweep_collection {
         # Convert CleanSweep VCFs to an MSA
         cleansweep collection \
             -o ~{collection_name}_msa.fa \
+            ~{"--reference " + reference_fasta} \
             --alpha ~{alpha} \
             --min-coverage ~{min_coverage} \
             --n-threads ~{cpu} \

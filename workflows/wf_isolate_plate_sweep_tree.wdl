@@ -31,6 +31,7 @@ workflow isolate_plate_swipe_tree {
         input:
             samplenames = plate_swipe_names,
             vcfs = plate_swipe_vcfs,
+            reference_fasta = reference_fasta,
             collection_name = collection_name,
             alpha = cleansweep_alpha,
             min_coverage = plate_swipe_min_coverage,
