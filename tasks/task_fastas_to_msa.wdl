@@ -19,6 +19,7 @@ task fastas_to_msa {
     printf '%s\n' "${fastas[@]}" > fasta_paths.txt
 
     python3 << 'CODE'
+import gzip
 import string
 import sys
 
@@ -39,7 +40,8 @@ def sanitize_seq(seq):
 def iter_fasta(path):
     """Yield (name, sequence) one sequence at a time without buffering the file."""
     name, seq_lines = None, []
-    with open(path) as fh:
+    opener = gzip.open if path.endswith('.gz') else open
+    with opener(path, 'rt') as fh:
         for line in fh:
             line = line.rstrip('\n')
             if line.startswith('>'):
