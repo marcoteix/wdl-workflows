@@ -10,6 +10,7 @@ task snp_dists {
     String cluster_name
     Int disk_size = 50
     String docker = "us-docker.pkg.dev/general-theiagen/staphb/snp-dists:0.8.2"
+    Int memory = 2
   }
   command <<<
     # date and version control
@@ -27,7 +28,7 @@ task snp_dists {
   }
   runtime {
     docker: docker
-    memory: "2 GB"
+    memory: "~{memory} GB"
     cpu: 1
     disks: "local-disk " + disk_size + " SSD"
     disk: disk_size + " GB"
