@@ -104,6 +104,14 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: AMR gene detection with AMRFinderPlus.
+ - name: RGI
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_rgi.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: AMR gene detection from short reads with RGI bwt and the CARD database.
  - name: Plasmer
    subclass: WDL
    primaryDescriptorPath: /workflows/wf_plasmer.wdl
