@@ -40,9 +40,10 @@ workflow tracs {
 
         # a) Reference FASTAs (optionally gzipped) of each sample
         Array[Array[File]]? reference_fastas
-        # b) StrainGST strain reports (*.strains.tsv) of each sample; a sample may have
-        #    several reports
-        Array[Array[File]]? straingst_strains
+        # b) StrainGST strain report (*.strains.tsv) of each sample. One file per sample.
+        #    If a sample has multiple StrainGST runs, merge the reports before running this
+        #    workflow (e.g. concatenate them, keeping only one header line).
+        Array[File]? straingst_strains
         # b) Location (e.g. gs://bucket/path) of the StrainGST reference FASTAs, shared by
         #    all samples. The FASTA of each strain must be at
         #    <straingst_fasta_location>/<strain name><straingst_fasta_extension>.
@@ -87,7 +88,9 @@ workflow tracs {
         if (defined(straingst_strains)) {
             call tracs_find_straingst_references_task.tracs_find_straingst_references {
                 input:
-                    straingst_strains = select_first([straingst_strains])[idx],
+                    # Wrap the single file in an array; the task accepts Array[File] to
+                    # support future multi-report scenarios without interface changes.
+                    straingst_strains = [select_first([straingst_strains])[idx]],
                     fasta_location = select_first([straingst_fasta_location]),
                     fasta_extension = straingst_fasta_extension,
                     docker = tracs_docker_image
