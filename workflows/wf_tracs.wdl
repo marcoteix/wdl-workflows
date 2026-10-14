@@ -56,11 +56,17 @@ workflow tracs {
     }
 
     # ----------------- Check inputs -----------------
+    # An empty optional array (e.g. [] passed from Terra when a column has no value)
+    # is treated the same as absent. Short-circuit && ensures select_first is only
+    # called when the array is actually defined (non-null).
+    Boolean use_reference_fastas = defined(reference_fastas) && length(select_first([reference_fastas])) > 0
+    Boolean use_straingst_strains = defined(straingst_strains) && length(select_first([straingst_strains])) > 0
+
     # Count the entries of the optional per-sample inputs, if given
-    if (defined(reference_fastas)) {
+    if (use_reference_fastas) {
         Int n_reference_fastas = length(select_first([reference_fastas]))
     }
-    if (defined(straingst_strains)) {
+    if (use_straingst_strains) {
         Int n_straingst_strains = length(select_first([straingst_strains]))
     }
     # Fail early if the inputs are inconsistent. The samples are only processed once
@@ -82,10 +88,10 @@ workflow tracs {
 
         # Find the sample's reference FASTAs: (a) given directly, or (b) the FASTAs of the
         # strains detected by StrainGST
-        if (defined(reference_fastas)) {
+        if (use_reference_fastas) {
             Array[File] given_reference_fastas = select_first([reference_fastas])[idx]
         }
-        if (defined(straingst_strains)) {
+        if (use_straingst_strains) {
             call tracs_find_straingst_references_task.tracs_find_straingst_references {
                 input:
                     # Wrap the single file in an array; the task accepts Array[File] to
