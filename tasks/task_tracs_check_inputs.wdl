@@ -75,18 +75,23 @@ task tracs_check_inputs {
     # TRACS names directories and MSA sequences after the samples, and TRACS distance
     # cuts sequence names at the first whitespace, so sample names must be unique,
     # non-empty, and contain no whitespace or "/".
+    # Only checked when samplenames is non-empty; write_lines([]) can produce a file
+    # with one empty line on some Cromwell versions, which would cause a spurious
+    # "Sample names cannot be empty" error on top of the "samplenames is empty" one.
     # ---------------------------------------------------------------------------------
-    while IFS= read -r name || [[ -n "${name}" ]]; do
-      if [[ -z "${name}" ]]; then
-        report_error "Sample names cannot be empty."
-      elif [[ "${name}" =~ [[:space:]/] ]]; then
-        report_error "Sample name '${name}' contains whitespace or '/'."
-      fi
-    done < ~{samplenames_file}
+    if (( n_samples > 0 )); then
+      while IFS= read -r name || [[ -n "${name}" ]]; do
+        if [[ -z "${name}" ]]; then
+          report_error "Sample names cannot be empty."
+        elif [[ "${name}" =~ [[:space:]/] ]]; then
+          report_error "Sample name '${name}' contains whitespace or '/'."
+        fi
+      done < ~{samplenames_file}
 
-    duplicated_names=$(sort ~{samplenames_file} | uniq -d | paste -sd ',' -)
-    if [[ -n "${duplicated_names}" ]]; then
-      report_error "Sample names must be unique. Duplicated names: ${duplicated_names}"
+      duplicated_names=$(sort ~{samplenames_file} | uniq -d | paste -sd ',' -)
+      if [[ -n "${duplicated_names}" ]]; then
+        report_error "Sample names must be unique. Duplicated names: ${duplicated_names}"
+      fi
     fi
 
     if (( n_errors > 0 )); then
