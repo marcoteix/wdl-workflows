@@ -10,7 +10,6 @@ task tracs_distance {
     # Also report SNP distances that exclude SNPs likely caused by recombination
     # (TRACS --filter)
     Boolean filter_recombination = true
-    Int cpu = 2
     Int memory = 8
     Int disk_size = 20
     String docker = "us-central1-docker.pkg.dev/gcid-bacterial/gcid-bacterial/tracs:latest"
@@ -24,12 +23,14 @@ task tracs_distance {
     date
     tracs --version
 
-    # Distances are computed for every pair of samples in the MSA
+    # Distances are computed for every pair of samples in the MSA.
+    # Must run single-threaded: in TRACS < 1.1.0, the multi-threaded loop calls Python's
+    # PyErr_CheckSignals() from non-Python threads, which segfaults (exit code 139).
     tracs distance \
       --msa ~{msa} \
       -o ~{reference_name}_tracs_distances.csv \
       ~{true="--filter" false="" filter_recombination} \
-      -t ~{cpu}
+      -t 1
   >>>
   output {
     # CSV with one row per pair of samples. Main columns:
@@ -46,7 +47,7 @@ task tracs_distance {
   runtime {
     docker: docker
     memory: memory + " GB"
-    cpu: cpu
+    cpu: 1
     disks: "local-disk " + disk_size + " SSD"
     disk: disk_size + " GB"
     preemptible: 0

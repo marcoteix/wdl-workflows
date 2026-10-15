@@ -65,9 +65,10 @@ task tracs_align {
       2>&1 | tee tracs_align.log
     then
       echo "TRACS align finished."
-    elif grep -q "No reference genomes were found" tracs_align.log; then
+    elif grep -qE "No reference genomes were found|No matches found for --threshold-bp" tracs_align.log; then
       # TRACS exits with an error when sourmash finds none of the database references in
-      # the reads. Skip the sample instead of failing the workflow.
+      # the reads. Skip the sample instead of failing the workflow. TRACS >= 1.1 logs the
+      # first message; TRACS 1.0.1 crashes after sourmash logs the second one.
       echo "WARNING: none of the references in the database were found in the reads of ~{samplename}. The sample will be skipped." >&2
       references_found=false
       mkdir -p ~{samplename}
