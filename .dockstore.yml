@@ -160,3 +160,11 @@ workflows:
     - name: Marco Teixeira
       email: mcarvalh@broadinstitute.org
    topic: Strain-level SNP distances between metagenomic samples with TRACS.
+ - name: TRACS_Merge_StrainGST_Reports
+   subclass: WDL
+   primaryDescriptorPath: /workflows/wf_tracs_merge_straingst_reports.wdl
+   authors:
+    - orcid: 0000-0002-7219-0478
+    - name: Marco Teixeira
+      email: mcarvalh@broadinstitute.org
+   topic: Merges the StrainGST strain reports of one sample into one report for the TRACS workflow.

@@ -28,11 +28,14 @@ task tracs_find_straingst_references {
     reports = "~{sep=' ' straingst_strains}".split()
 
     # Combine the strains detected in all reports. Each report has one row per detected
-    # strain, with the strain name in the "strain" column.
+    # strain, with the strain name in the "strain" column. Reports concatenated with
+    # their headers repeat the header line, which pandas reads as a strain named
+    # "strain"; those rows are dropped (blank lines are already skipped by pandas).
     strains = []
     for report in reports:
         straingst = pd.read_csv(report, sep="\t", index_col=0)
-        strains.extend(straingst["strain"].astype(str).tolist())
+        detected = straingst["strain"].dropna().astype(str)
+        strains.extend(detected[detected != "strain"].tolist())
 
     # A strain detected in more than one report only needs to be in the database once
     strains = list(dict.fromkeys(strains))

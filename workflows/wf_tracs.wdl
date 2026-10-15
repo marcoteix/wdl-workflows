@@ -40,9 +40,11 @@ workflow tracs {
 
         # a) Reference FASTAs (optionally gzipped) of each sample
         Array[Array[File]]? reference_fastas
-        # b) StrainGST strain report (*.strains.tsv) of each sample. One file per sample.
-        #    If a sample has multiple StrainGST runs, merge the reports before running this
-        #    workflow (e.g. concatenate them, keeping only one header line).
+        # b) StrainGST strain report (*.strains.tsv) of each sample, one file per sample.
+        #    Samples with several reports (e.g. one per StrainGST database) must have them
+        #    merged first with workflows/wf_tracs_merge_straingst_reports.wdl: when this
+        #    workflow runs on a Terra set, Terra flattens per-sample lists of reports into
+        #    one list, losing which report belongs to which sample.
         Array[File]? straingst_strains
         # b) Location (e.g. gs://bucket/path) of the StrainGST reference FASTAs, shared by
         #    all samples. The FASTA of each strain must be at
